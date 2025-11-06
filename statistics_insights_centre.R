@@ -73,10 +73,19 @@ write.csv(dfGender %>% count(gender_concept_name),
 
 ###Queries for disease counts---------------------------------------------------  
 #Sql query
+#Look for the conditions in the Condition Occurrence table or the Observation table and add the counts
 sqlDiseaseCS <-  translate(
-  "select count(distinct person_id)
+  "select (
+    select count(distinct person_id)
       from @databaseSchema.condition_occurrence
-      where condition_concept_id in (@diseaseConceptSet)",
+      where condition_concept_id in (@diseaseConceptSet)
+    ) 
+    + (
+    select count(distinct person_id)
+      from @databaseSchema.observation
+      where observation_concept_id in (@observationConceptSet)
+        and value_as_concept_id in (@diseaseConceptSet)
+    )",
   targetDialect = sqlDialect
   )
 
@@ -86,7 +95,8 @@ diabetesCounts <- querySql(
   render(
     sqlDiseaseCS, 
     databaseSchema = databaseSchema,
-    diseaseConceptSet = paste0(diabetesCS$concept_id, collapse = ",")
+    diseaseConceptSet = paste0(diabetesCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
     )
   )
 
@@ -96,7 +106,8 @@ ibdCounts <- querySql(
   render(
     sqlDiseaseCS, 
     databaseSchema = databaseSchema,
-    diseaseConceptSet = paste0(ibdCS$concept_id, collapse = ",")
+    diseaseConceptSet = paste0(ibdCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
     )
   )
 
@@ -106,7 +117,8 @@ bcCounts <- querySql(
   render(
     sqlDiseaseCS, 
     databaseSchema = databaseSchema,
-    diseaseConceptSet = paste0(bcCS$concept_id, collapse = ",")
+    diseaseConceptSet = paste0(bcCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
     )
   )
 
@@ -116,7 +128,8 @@ lcCounts <- querySql(
   render(
     sqlDiseaseCS, 
     databaseSchema = databaseSchema,
-    diseaseConceptSet = paste0(lcCS$concept_id, collapse = ",")
+    diseaseConceptSet = paste0(lcCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
     )
   )
 
