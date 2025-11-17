@@ -3,6 +3,7 @@
 # install.packages('dplyr')
 # install.packages('ggplot2')
 # install.packages('viridis')
+# install.packages("~/viridis_0.6.5.tar.gz", repos = NULL, type="source")
 library(DatabaseConnector)
 library(SqlRender)
 library(dplyr)
@@ -36,24 +37,43 @@ sqlDialect <- ""
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite, 
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
 
+### Import MUW db credentials, ignore if not available -------------------------
+if (file.exists('R/muw.db.R')) {
+  source("R/muw.db.R")
+}
+
 for (db in dbNames){
   #Create results directory
   resultsDirectory <- paste0(resultsDir, db)
   dir.create(resultsDirectory)
-
-  #Connect to the db
-  #https:://ohdsi.github.io/DatabaseConnector/articles/Connecting.html
-  connectionDetails <- DatabaseConnector::createConnectionDetails(
-    dbms = bdms,
-    server = paste0(server,"/", db),
-    user = user,
-    password = password,
-    port = port,
-    pathToDriver = pathToDriver
-  )
-
-  connection <- DatabaseConnector::connect(connectionDetails)
-
+  
+  if (file.exists('R/muw.db.R')) {
+    #Connect to the db: MUW style
+    connectionDetails <- DatabaseConnector::createConnectionDetails(
+      dbms = dbms,
+      connectionString = connectionString,
+      user = user[db],
+      password = password[db]
+    )
+    connection <- DatabaseConnector::connect(connectionDetails)
+    databaseSchema <- schemas[db]
+    
+  } else {
+    
+    #Connect to the db
+    #https:://ohdsi.github.io/DatabaseConnector/articles/Connecting.html
+    connectionDetails <- DatabaseConnector::createConnectionDetails(
+      dbms = bdms,
+      server = paste0(server,"/", db),
+      user = user,
+      password = password,
+      port = port,
+      pathToDriver = pathToDriver
+    )
+    
+    connection <- DatabaseConnector::connect(connectionDetails)
+  }
+  
   ###Collect the relevant data--------------------------------------------------
   source("R/concept_sets.R")
   source("R/conversion_tables.R")
@@ -62,7 +82,7 @@ for (db in dbNames){
 
   disconnect(connection)
 }
-
+resultsDirectory = resultsDir
 
 ###Combine results--------------------------------------------------------------
 source("R/combine_results.R")
