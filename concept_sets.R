@@ -17,6 +17,7 @@ diabetesCS <- querySql(
     concepts = c(201826,4193704,4008576,201254)
     )
   )
+names(diabetesCS) <- tolower(names(diabetesCS))  # MUW: since oracle returns upper case column names
 
 #Inflammatory Bowel Disease Concept Set
 ibdCS <- querySql(
@@ -27,6 +28,7 @@ ibdCS <- querySql(
     concepts = c(201606,81893,194684)
     )
   )
+names(ibdCS) <- tolower(names(ibdCS))  # MUW: since oracle returns upper case column names
 
 #Breast cancer Concept Set
 bcCS <- querySql(
@@ -37,6 +39,7 @@ bcCS <- querySql(
     concepts = c(4112853)
     )
   )
+names(bcCS) <- tolower(names(bcCS))  # MUW: since oracle returns upper case column names
 
 #Lung cancer Concept Set
 lcCS <- querySql(
@@ -47,9 +50,10 @@ lcCS <- querySql(
     concepts = c(443388,4115276,40492938)
     )
   )
+names(lcCS) <- tolower(names(lcCS))  # MUW: since oracle returns upper case column names
 
 #Observation Concept Set
-οbservationCS <- querySql(
+observationCS <- querySql(
   connection,
   render(
     sqlDiseaseDescendants,
@@ -57,6 +61,7 @@ lcCS <- querySql(
     concepts = c(46234708,1340204)
   )
 )
+names(observationCS) <- tolower(names(observationCS))  # MUW: since oracle returns upper case column names
 
 
 ### PROMIS_10 questionnaire concepts--------------------------------------------

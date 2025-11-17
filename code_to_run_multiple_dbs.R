@@ -17,8 +17,8 @@ setwd("~/H2O")
 dbNames <- c("db1","db2","db3","db4")
 
 #Create final results directory (for the combined data)
-resultsDirectory <- "results"
-dir.create(resultsDirectory)
+resultsDir <- "results"
+dir.create(resultsDir)
 plotsDirectory <- "plots"
 dir.create(plotsDirectory)
 
@@ -38,7 +38,7 @@ sqlDialect <- ""
 
 for (db in dbNames){
   #Create results directory
-  resultsDirectory <- paste0(resultsDirectory, db)
+  resultsDirectory <- paste0(resultsDir, db)
   dir.create(resultsDirectory)
 
   #Connect to the db
@@ -69,11 +69,12 @@ source("R/combine_results.R")
 
 #Delete the separate folders
 for (db in dbNames){
-  resultsDirectory <- paste0("results", db)
+  resultsDirectory <- paste0(resultsDir, db)
   unlink(resultsDirectory, recursive=TRUE)
   }
 
 
 ###Create plots-----------------------------------------------------------------
+resultsDirectory = resultsDir
 source("R/visualizations_insights_centre.R")
 source("R/visualizations_PROMIS_GLOBAL_10.R")
