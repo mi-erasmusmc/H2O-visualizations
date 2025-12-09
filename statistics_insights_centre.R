@@ -14,6 +14,7 @@ numPersons <- querySql(
   )
 
 names(numPersons)[names(numPersons) == "COUNT"] <- "number_of_persons"
+names(numPersons)[names(numPersons) == "COUNT(PERSON_ID)"] <- "number_of_persons"  # oracle
 
 write.csv(numPersons, 
           file.path(resultsDirectory,"num_persons.csv"), 
@@ -74,8 +75,7 @@ write.csv(dfGender %>% count(gender_concept_name),
 ###Queries for disease counts---------------------------------------------------  
 #Sql query
 #Look for the conditions in the Condition Occurrence table or the Observation table and add the counts
-sqlDiseaseCS <-  translate(
-  "select (
+query <-  "select ((
     select count(distinct person_id)
       from @databaseSchema.condition_occurrence
       where condition_concept_id in (@diseaseConceptSet)
@@ -85,7 +85,12 @@ sqlDiseaseCS <-  translate(
       from @databaseSchema.observation
       where observation_concept_id in (@observationConceptSet)
         and value_as_concept_id in (@diseaseConceptSet)
-    )",
+    ))"
+if (sqlDialect == "oracle") {
+  query <- paste(query, ' FROM DUAL')
+}
+sqlDiseaseCS <-  translate(
+  query,
   targetDialect = sqlDialect
   )
 
@@ -136,8 +141,8 @@ lcCounts <- querySql(
 dfDiseaseCounts <- data.frame(
   disease=c("diabetes","ibd","bc","lc"),
   counts=c(
-    diabetesCounts[["count"]],ibdCounts[["count"]],bcCounts[["count"]],
-    lcCounts[["count"]])
+    diabetesCounts[[1]],ibdCounts[[1]],bcCounts[[1]],  # since count is not returned by the oracle dbms
+    lcCounts[[1]])
   )
 
 

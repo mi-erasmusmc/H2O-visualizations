@@ -1,14 +1,21 @@
 ###PROMIS_GLOBAL_10 questionnaire (all questions)-------------------------------
+# MUW: Adapted the below sql, more specific the "disease" subquery, since the "distinct on" syntax is postgres dialect, I also removed the join on concept
 sqlPromis10 <- translate(
   "with disease as (
-       select distinct on (person_id)
-              condition_occurrence.person_id, 
-              condition_occurrence.condition_concept_id,
-              condition_occurrence.condition_start_date
-       from @databaseSchema.condition_occurrence
-       join @databaseSchema.concept
-           on condition_occurrence.condition_concept_id = concept.concept_id
-       where condition_occurrence.condition_concept_id in (@diseaseConcepts)
+      SELECT person_id, condition_concept_id, condition_start_date
+      FROM (
+          SELECT
+              person_id,
+              condition_concept_id,
+              condition_start_date,
+              ROW_NUMBER() OVER (
+                  PARTITION BY person_id
+                  ORDER BY condition_start_date DESC
+              ) AS rn
+          FROM @databaseSchema.condition_occurrence
+          WHERE condition_concept_id IN (@diseaseConcepts)
+      ) sub
+      WHERE rn = 1
    ), response as (
        select person_id, 
               observation_concept_id, value_as_concept_id,
@@ -62,6 +69,9 @@ dfPromis10 <- dfPromis10 %>%
 #Add the answer scale number to perform calculations
 dfPromis10 <- dfPromis10 %>%
   left_join(conversionAnswerCTN, by="answer_concept_id")
+
+# MUW: ave complained about date conversion's origin
+dfPromis10$questionnaire_date <- as.numeric(dfPromis10$questionnaire_date)
 
 #Add the time (1st time, 2nd repeat, etc.) a person filled the questionnaire
 dfPromis10$answer_time <- ave(

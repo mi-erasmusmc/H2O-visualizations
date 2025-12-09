@@ -181,7 +181,7 @@ dev.off()
 #Physical health box plot-------------------------------------------------------
 #Add the calculated t-scores
 dfPromis10PH <- dfPromis10PH %>%
-  left_join(conversionPH, by="total_score")
+  left_join(conversionPHScore, by="total_score")  # MUW conversionPHScore?
 
 #Keep only the 1st time the patient responded to the questionnaire
 dfPromis10PHFirst <- subset(dfPromis10PH, answer_time == 1)
@@ -211,7 +211,7 @@ dev.off()
 #Mental health box plot---------------------------------------------------------
 #Add the calculated t-scores
 dfPromis10MH <- dfPromis10MH %>%
-  left_join(conversionMH, by="total_score")
+  left_join(conversionMHScore, by="total_score")  # MUW: conversionMHScore
 
 #Keep only the 1st time the patient responded to the questionnaire
 dfPromis10MHFirst <- subset(dfPromis10MH, answer_time == 1)

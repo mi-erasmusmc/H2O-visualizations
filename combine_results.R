@@ -32,8 +32,8 @@ for (db in dbNames){
   commonCol <- "ageGroups"
   otherCol <- setdiff(names(df), commonCol)
   
-  names(df)[names(df) %in% otherCol] <- paste0(colnames(df),"_",db)
- 
+  names(df)[names(df) %in% otherCol] <- paste0(otherCol,"_",db)  # MUW otherCol!
+
   if (is.null(dfAgeCombined)) {
     dfAgeCombined <- df
   } else {
@@ -61,7 +61,7 @@ for (db in dbNames){
   commonCol <- "gender_concept_name"
   otherCol <- setdiff(names(df), commonCol)
   
-  names(df)[names(df) %in% otherCol] <- paste0(colnames(df),"_",db)
+  names(df)[names(df) %in% otherCol] <- paste0(otherCol,"_",db)
   
   if (is.null(dfGenderCombined)) {
     dfGenderCombined <- df
@@ -90,7 +90,7 @@ for (db in dbNames){
   commonCol <- "disease"
   otherCol <- setdiff(names(df), commonCol)
   
-  names(df)[names(df) %in% otherCol] <- paste0(colnames(df),"_",db)
+  names(df)[names(df) %in% otherCol] <- paste0(otherCol,"_",db)
   
   if (is.null(dfDiseaseCombined)) {
     dfDiseaseCombined <- df
