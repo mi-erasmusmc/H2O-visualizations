@@ -50,7 +50,7 @@ connection <- DatabaseConnector::connect(connectionDetails)
 
 
 ###Collect the relevant data----------------------------------------------------
-source("R/concept_sets.R")
+source("R/queries_counts.R")
 source("R/conversion_tables.R")
 source("R/statistics_insights_centre.R")
 source("R/statistics_PROMIS_GLOBAL_10.R")
