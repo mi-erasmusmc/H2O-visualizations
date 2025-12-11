@@ -56,6 +56,8 @@ Sample code to insert the new records in the Observation table for postgresql ca
 # Plots
 ## Insights centre
 - Histograms
+- Diabetes therapy
+    - Concepts and their descentants are used as agreed in the [20250221 PROMOP H2O dictionary_pragmatic set_Marko&Lau_AnswerSet](https://teamitresearch.sharepoint.com/:x:/r/sites/HOO/_layouts/15/Doc.aspx?sourcedoc=%7B0B80E0B5-D0CF-46F3-916B-A8DF5E3C6F8C%7D&file=20250221%20PROMOP%20H2O%20dictionary_pragmatic%20set_Marko%26Lau_AnswerSet.xlsx&action=default&mobileredirect=true)
 
 ## PROMIS GLOBAL 10
 - Boxplot

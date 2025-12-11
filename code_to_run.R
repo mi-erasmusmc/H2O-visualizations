@@ -29,9 +29,9 @@ port <-
 pathToDriver <- ""
 
 databaseSchema <- ""
-sqlDialect <- "" 
-#supported dialects: 
-#sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite, 
+sqlDialect <- ""
+#supported dialects:
+#sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite,
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
 
 
@@ -49,14 +49,22 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
 connection <- DatabaseConnector::connect(connectionDetails)
 
 
-###Collect the relevant data----------------------------------------------------
-source("R/queries_counts.R")
-source("R/conversion_tables.R")
-source("R/statistics_insights_centre.R")
-source("R/statistics_PROMIS_GLOBAL_10.R")
+###Collect the relevant data insights centre------------------------------------
+source("R/insights_centre/number_of_persons.R")
+source("R/insights_centre/disease_counts.R")
+source("R/insights_centre/therapy_counts.R")
+###Collect the relevant data promis global 10-----------------------------------
+source("R/promis_global10/conversion_tables.R")
+source("R/promis_global10/statistics_promis10.R")
 
 disconnect(connection)
 
-###Create plots-----------------------------------------------------------------
-source("R/visualizations_insights_centre.R")
-source("R/visualizations_PROMIS_GLOBAL_10.R")
+#If results from multiple sites available---------------------------------------
+# source("R/extra/combine_results_insights_centre.R")
+# source("R/extra/combine_results_promis10.R")
+
+###Create plots insights centre-------------------------------------------------
+source("R/insights_centre/visualizations_insights_centre.R")
+###Create plots promis global 10------------------------------------------------
+source("R/promis_global10/visualizations_promis10.R")
+# source("R/promis_global10/visualizations_promis10_additional.R")
