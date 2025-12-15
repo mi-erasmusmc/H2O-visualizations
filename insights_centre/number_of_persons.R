@@ -48,7 +48,7 @@ names(dfAge) <- tolower(names(dfAge))
 
 dfAge$calcAge <- as.numeric(format(Sys.Date(), "%Y")) - dfAge$year_of_birth
 
-dfAge$ageGroups <- cut(dfAge$calcAge, breaks = seq (-1,100,by=20))
+dfAge$ageGroups <- cut(dfAge$calcAge, breaks = seq(-1, 100, by = 20))
 
 #Write in one file all counts for each centre-----------------------------------
 write.csv(
@@ -87,6 +87,6 @@ dfGender <- dfGender %>%
 #Write in one file all counts for each centre-----------------------------------
 write.csv(
   dfGender %>% count(gender_concept_name),
-  file.path(resultsDirectory,"num_persons_strat_gender.csv"),
+  file.path(resultsDirectory, "num_persons_strat_gender.csv"),
   row.names = FALSE
 )

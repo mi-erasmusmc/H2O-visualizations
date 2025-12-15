@@ -5,7 +5,7 @@ numPersonsCombined <- NULL
 for (db in dbNames){
   filePath <- file.path(paste0("results", db), fileName)
   df <- read.csv(filePath)
-  colnames(df) <- paste0(colnames(df),"_",db)
+  colnames(df) <- paste0(colnames(df), "_", db)
   if (is.null(numPersonsCombined)) {
     numPersonsCombined <- df
   } else {
@@ -57,7 +57,7 @@ for (db in dbNames){
   df <- read.csv(filePath)
   commonCol <- "gender_concept_name"
   otherCol <- setdiff(names(df), commonCol)
-  names(df)[names(df) %in% otherCol] <- paste0(otherCol,"_",db)
+  names(df)[names(df) %in% otherCol] <- paste0(otherCol, "_", db)
   if (is.null(dfGenderCombined)) {
     dfGenderCombined <- df
   } else {

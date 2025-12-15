@@ -1,5 +1,6 @@
 ###Libraries required-----------------------------------------------------------
 #install.packages('DatabaseConnector')
+#install.packages('SqlRender')
 #install.packages('dplyr')
 #install.packages('ggplot2')
 #install.packages('viridis')
@@ -34,7 +35,6 @@ sqlDialect <- ""
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite,
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
 
-
 #Connect to the db
 #https:://ohdsi.github.io/DatabaseConnector/articles/Connecting.html
 connectionDetails <- DatabaseConnector::createConnectionDetails(
@@ -47,7 +47,6 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
 )
 
 connection <- DatabaseConnector::connect(connectionDetails)
-
 
 ###Collect the relevant data insights centre------------------------------------
 source("R/insights_centre/number_of_persons.R")
@@ -65,6 +64,8 @@ disconnect(connection)
 
 ###Create plots insights centre-------------------------------------------------
 source("R/insights_centre/visualizations_insights_centre.R")
+# source("R/insights_centre/visualizations_insights_centre_additional.R")
+
 ###Create plots promis global 10------------------------------------------------
 source("R/promis_global10/visualizations_promis10.R")
 # source("R/promis_global10/visualizations_promis10_additional.R")

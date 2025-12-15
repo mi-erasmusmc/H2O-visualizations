@@ -2,8 +2,8 @@
 sqlcountbydisease <- translate(
   "select count (distinct person_id) 
   from @databaseSchema.observation
-  where observation_concept_id=@observation_concept
-  and value_as_concept_id=@value_concept",
+  where observation_concept_id = @observationConceptSet
+  and value_as_concept_id = @diseaseConceptSet",
   targetDialect = sqlDialect
 )
 
@@ -13,8 +13,8 @@ diabetesCounts <- querySql(
   render(
     sqlcountbydisease,
     databaseSchema = databaseSchema,
-    observation_concept = 44807982, #Participant in research study
-    value_concept = 2010000001 #custom concept for H2O Diabetes patient
+    observationConceptSet = 44807982, #Participant in research study
+    diseaseConceptSet = 2010000001 #custom concept for H2O Diabetes
   )
 )
 
@@ -23,8 +23,8 @@ ibdCounts <- querySql(
   render(
     sqlcountbydisease,
     databaseSchema = databaseSchema,
-    observation_concept = 44807982, #Participant in research study
-    value_concept = 2010000002 #custom concept for H2O IBD patient
+    observationConceptSet = 44807982, #Participant in research study
+    diseaseConceptSet = 2010000002 #custom concept for H2O IBD
   )
 )
 
@@ -33,8 +33,8 @@ bcCounts <- querySql(
   render(
     sqlcountbydisease,
     databaseSchema = databaseSchema,
-    observation_concept = 44807982, #Participant in research study
-    value_concept = 2010000003 #custom concept for H2O BC patient
+    observationConceptSet = 44807982, #Participant in research study
+    diseaseConcept = 2010000003 #custom concept for H2O BC
   )
 )
 
@@ -43,8 +43,8 @@ lcCounts <- querySql(
   render(
     sqlcountbydisease,
     databaseSchema = databaseSchema,
-    observation_concept = 44807982, #Participant in research study
-    value_concept = 2010000004 #custom concept for H2O LC patient
+    observationConceptSet = 44807982, #Participant in research study
+    diseaseConceptSet = 2010000004 #custom concept for H2O LC
   )
 )
 

@@ -1,19 +1,12 @@
-###Therapy concepts diabetes----------------------------------------------------
-#General query to retrieve the descendant concept ids---------------------------
-sqlDiseaseDescendants <-  translate(
-  "select concept_id from @databaseSchema.concept_ancestor 
-  join @databaseSchema.concept
-    on concept_ancestor.descendant_concept_id = concept.concept_id
-  where ancestor_concept_id in (@concepts)",
-  targetDialect = sqlDialect
-)
+###Therapies diabetes-----------------------------------------------------------
+source("R/insights_centre/sql_queries.R")
 
 #Get the concept sets-----------------------------------------------------------
 #Diet & Exercise
 dietExerciseCS <- querySql(
   connection,
   render(
-    sqlDiseaseDescendants,
+    sqlDescendants,
     databaseSchema = databaseSchema,
     concepts = c(4027003, 4198096)
   )
@@ -26,7 +19,7 @@ names(dietExerciseCS) <- tolower(names(dietExerciseCS))
 oralAgentsCS <- querySql(
   connection,
   render(
-    sqlDiseaseDescendants,
+    sqlDescendants,
     databaseSchema = databaseSchema,
     concepts = 21600744
   )
@@ -38,7 +31,7 @@ names(oralAgentsCS) <- tolower(names(oralAgentsCS))
 insulinCS <- querySql(
   connection,
   render(
-    sqlDiseaseDescendants,
+    sqlDescendants,
     databaseSchema = databaseSchema,
     concepts = 21600713
   )
@@ -50,7 +43,7 @@ names(insulinCS) <- tolower(names(insulinCS))
 otherInjectablesCS <- querySql(
   connection,
   render(
-    sqlDiseaseDescendants,
+    sqlDescendants,
     databaseSchema = databaseSchema,
     concepts = 955112
   )
@@ -62,97 +55,76 @@ names(otherInjectablesCS) <- tolower(names(otherInjectablesCS))
 observationCS <- querySql(
   connection,
   render(
-    sqlDiseaseDescendants,
+    sqlDescendants,
     databaseSchema = databaseSchema,
     concepts = c(46234708, 1340204)
   )
 )
+
 names(observationCS) <- tolower(names(observationCS))
 
-#Queries for therapy counts-----------------------------------------------------
-#Look for the drugs in the Drug Exposure table or the Observation table
-#and for the diet and exercise in the observation table
-
-query <-  "select ((
-    select count(distinct person_id)
-      from @databaseSchema.drug_exposure
-      where condition_concept_id in (@drug_therapy_concepts)
-    )
-    + (
-    select count(distinct person_id)
-      from @databaseSchema.observation
-      where condition_concept_id in (@non_drug_therapies_concepts)
-    )
-    + (
-    select count(distinct person_id)
-      from @databaseSchema.observation
-      where observation_concept_id in (@observation_concepts)
-        and value_as_concept_id in (@drug_therapy_concepts)
-    ))"
-
-if (sqlDialect == "oracle") {
-  query <- paste(query, "FROM DUAL")
-}
-
-sqlTherapyCS <-  translate(
-  query,
-  targetDialect = sqlDialect
-)
-
 #Get the counts-----------------------------------------------------------------
-thereapyCounts <- querySql(
+#Diet and Exercise
+dietExerciseCounts <- querySql(
   connection,
   render(
-    sqlDiseaseCS,
+    sqlCounts,
     databaseSchema = databaseSchema,
-    diseaseConceptSet = paste0(diabetesCS$concept_id, collapse = ","),
+    omopTable = observation,
+    ConceptSet = paste0(dietExerciseCS$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )
 
-#Inflammatory Bowel Disease
-# ibdCounts <- querySql(
-#   connection,
-#   render(
-#     sqlDiseaseCS, 
-#     databaseSchema = databaseSchema,
-#     diseaseConceptSet = paste0(ibdCS$concept_id, collapse = ","),
-#     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
-#     )
-#   )
-# 
-#Breast cancer
-# bcCounts <- querySql(
-#   connection,
-#   render(
-#     sqlDiseaseCS, 
-#     databaseSchema = databaseSchema,
-#     diseaseConceptSet = paste0(bcCS$concept_id, collapse = ","),
-#     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
-#     )
-#   )
-#
-# #Lung Cancer
-# lcCounts <- querySql(
-#   connection,
-#   render(
-#     sqlDiseaseCS, 
-#     databaseSchema = databaseSchema,
-#     diseaseConceptSet = paste0(lcCS$concept_id, collapse = ","),
-#     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
-#     )
-#   )
-#
-# dfDiseaseCounts <- data.frame(
-#   disease=c("diabetes","ibd","bc","lc"),
-#   counts=c(
-#     diabetesCounts[[1]],ibdCounts[[1]],bcCounts[[1]],  # since count is not returned by the oracle dbms
-#     lcCounts[[1]])
-#   )
-#
-#
+#Oral Agents
+oralAgentsCounts <- querySql(
+  connection,
+  render(
+    sqlCounts,
+    databaseSchema = databaseSchema,
+    drugTherapyConceptSetomopTable = drug_exposure,
+    ConceptSet = paste0(oralAgents$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
+  )
+)
+
+#insulin
+insulinCounts <- querySql(
+  connection,
+  render(
+    sqlCounts,
+    databaseSchema = databaseSchema,
+    omopTable = drug_exposure,
+    ConceptSet = paste0(ibinsulinCSdCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
+  )
+)
+
+#Other Injectables
+otherInjectablesCounts <- querySql(
+  connection,
+  render(
+    sqlCounts,
+    databaseSchema = databaseSchema,
+    omopTable = drug_exposure,
+    ConceptSet = paste0(otherInjectablesCS$concept_id, collapse = ","),
+    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
+  )
+)
+
+dfTherapyCounts <- data.frame(
+  disease = c("Diet & Exercise", "Oral Agents", "insulin", "Other Injectables"),
+  counts = c(
+    dietExerciseCounts[[1]],
+    oralAgentsCounts[[1]],
+    insulinCounts[[1]],
+    otherInjectablesCounts[[1]]
+  )
+)
+
+
 #Write in one file all counts for each centre-----------------------------------
-write.csv(dfDiseaseCounts,
-  file.path(resultsDirectory, "disease_counts.csv"),
+write.csv(dfTherapyCounts,
+  file.path(resultsDirectory, "therapy_counts.csv"),
   row.names = FALSE
 )

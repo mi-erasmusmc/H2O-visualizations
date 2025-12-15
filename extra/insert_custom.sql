@@ -28,7 +28,7 @@ insert into cdm_name.concept (
 )
 values (
     2010000001,
-    'H2O Diabetes patient',
+    'H2O Diabetes',
     'Observation',
     'H2O',
     'Undefined',
@@ -63,9 +63,9 @@ select
 	max_id.max_id + rows_to_insert.rn, 
 	rows_to_insert.person_id, 
 	44807982, -- Participant in research study
-	2010000001, -- custom concept for H2O Diabetes patient
+	2010000001, -- custom concept for H2O Diabetes
 	'2020-10-01', -- start of H2O project
-	'H2O Diabetes Patient', -- custom concept name
+	'H2O Diabetes', -- custom concept name
 	32862 -- Patient filled survey
 from rows_to_insert
 cross join max_id;

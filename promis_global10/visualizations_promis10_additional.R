@@ -94,6 +94,6 @@ pltTrans <-
     values = c("up" = "blue", "down" = "red", "no change" = "grey")
   ) +
   theme_minimal()
-jpeg(file.path(plotsDirectory,"transitions_general_health.jpg"))
+jpeg(file.path(plotsDirectory, "transitions_general_health.jpg"))
 print(pltTrans)
 dev.off()
