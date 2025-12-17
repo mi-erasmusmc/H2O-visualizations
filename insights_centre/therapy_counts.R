@@ -1,6 +1,3 @@
-###Therapies diabetes-----------------------------------------------------------
-source("R/insights_centre/sql_queries.R")
-
 #Get the concept sets-----------------------------------------------------------
 #Diet & Exercise
 dietExerciseCS <- querySql(

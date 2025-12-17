@@ -1,6 +1,3 @@
-###Diagnostics diabetes---------------------------------------------------------
-source("R/insights_centre/sql_queries.R")
-
 #Get the concept set------------------------------------------------------------
 #Hemoglobin A1c measurement
 hA1cCS <- querySql(
