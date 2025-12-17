@@ -1,7 +1,7 @@
 ###Number of persons------------------------------------------------------------
 #Total--------------------------------------------------------------------------
 numPersons <- read.csv(
-  file.path(resultsDirectory,"num_persons.csv"),
+  file.path(resultsDirectory, "num_persons.csv"),
   stringsAsFactors = FALSE, check.names = FALSE
 )
 
@@ -19,7 +19,7 @@ pltAge <-
     y = "Age group",
     title = "Number of persons stratified by age"
   )
-jpeg(file.path(plotsDirectory,"num_persons_strat_age.jpg"))
+jpeg(file.path(plotsDirectory, "num_persons_strat_age.jpg"))
 print(pltAge)
 dev.off()
 
@@ -61,7 +61,7 @@ pltDisease <-
     y = "H2O disease group",
     title = "Number of persons per disease"
   )
-jpeg(file.path(plotsDirectory,"num_persons_disease.jpg"))
+jpeg(file.path(plotsDirectory, "num_persons_disease.jpg"))
 print(pltDisease)
 dev.off()
 

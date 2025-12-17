@@ -68,10 +68,9 @@ names(observationCS) <- tolower(names(observationCS))
 dietExerciseCounts <- querySql(
   connection,
   render(
-    sqlCounts,
+    sqlCountsLifeStyle,
     databaseSchema = databaseSchema,
-    omopTable = observation,
-    ConceptSet = paste0(dietExerciseCS$concept_id, collapse = ","),
+    conceptSet = paste0(dietExerciseCS$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )
@@ -80,10 +79,9 @@ dietExerciseCounts <- querySql(
 oralAgentsCounts <- querySql(
   connection,
   render(
-    sqlCounts,
+    sqlCountsDrugs,
     databaseSchema = databaseSchema,
-    drugTherapyConceptSetomopTable = drug_exposure,
-    ConceptSet = paste0(oralAgents$concept_id, collapse = ","),
+    conceptSet = paste0(oralAgents$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )
@@ -92,10 +90,9 @@ oralAgentsCounts <- querySql(
 insulinCounts <- querySql(
   connection,
   render(
-    sqlCounts,
+    sqlCountsDrugs,
     databaseSchema = databaseSchema,
-    omopTable = drug_exposure,
-    ConceptSet = paste0(ibinsulinCSdCS$concept_id, collapse = ","),
+    conceptSet = paste0(ibinsulinCSdCS$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )
@@ -104,16 +101,15 @@ insulinCounts <- querySql(
 otherInjectablesCounts <- querySql(
   connection,
   render(
-    sqlCounts,
+    sqlCountsDrugs,
     databaseSchema = databaseSchema,
-    omopTable = drug_exposure,
-    ConceptSet = paste0(otherInjectablesCS$concept_id, collapse = ","),
+    conceptSet = paste0(otherInjectablesCS$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )
 
 dfTherapyCounts <- data.frame(
-  disease = c("Diet & Exercise", "Oral Agents", "insulin", "Other Injectables"),
+  therapy = c("Diet & Exercise", "Oral Agents", "insulin", "Other Injectables"),
   counts = c(
     dietExerciseCounts[[1]],
     oralAgentsCounts[[1]],

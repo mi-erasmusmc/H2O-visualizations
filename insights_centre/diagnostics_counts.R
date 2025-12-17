@@ -31,8 +31,7 @@ hA1cCounts <- querySql(
   render(
     sqlCounts,
     databaseSchema = databaseSchema,
-    omopTable = measurement,
-    ConceptSet = paste0(hA1cCS$concept_id, collapse = ","),
+    conceptSet = paste0(hA1cCS$concept_id, collapse = ","),
     observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
   )
 )

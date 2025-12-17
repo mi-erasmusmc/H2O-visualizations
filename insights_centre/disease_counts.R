@@ -1,17 +1,8 @@
-#Query for disease counts-------------------------------------------------------
-sqlcountbydisease <- translate(
-  "select count (distinct person_id) 
-  from @databaseSchema.observation
-  where observation_concept_id = @observationConceptSet
-  and value_as_concept_id = @diseaseConceptSet",
-  targetDialect = sqlDialect
-)
-
 #Get the counts-----------------------------------------------------------------
 diabetesCounts <- querySql(
   connection,
   render(
-    sqlcountbydisease,
+    sqlCountsDisease,
     databaseSchema = databaseSchema,
     observationConceptSet = 44807982, #Participant in research study
     diseaseConceptSet = 2010000001 #custom concept for H2O Diabetes
@@ -21,7 +12,7 @@ diabetesCounts <- querySql(
 ibdCounts <- querySql(
   connection,
   render(
-    sqlcountbydisease,
+    sqlCountsDisease,
     databaseSchema = databaseSchema,
     observationConceptSet = 44807982, #Participant in research study
     diseaseConceptSet = 2010000002 #custom concept for H2O IBD
@@ -31,17 +22,17 @@ ibdCounts <- querySql(
 bcCounts <- querySql(
   connection,
   render(
-    sqlcountbydisease,
+    sqlCountsDisease,
     databaseSchema = databaseSchema,
     observationConceptSet = 44807982, #Participant in research study
-    diseaseConcept = 2010000003 #custom concept for H2O BC
+    diseaseConceptSet = 2010000003 #custom concept for H2O BC
   )
 )
 
 lcCounts <- querySql(
   connection,
   render(
-    sqlcountbydisease,
+    sqlCountsDisease,
     databaseSchema = databaseSchema,
     observationConceptSet = 44807982, #Participant in research study
     diseaseConceptSet = 2010000004 #custom concept for H2O LC

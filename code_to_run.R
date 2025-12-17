@@ -50,8 +50,10 @@ connection <- DatabaseConnector::connect(connectionDetails)
 
 ###Collect the relevant data insights centre------------------------------------
 source("R/insights_centre/number_of_persons.R")
+source("R/insights_centre/sql_queries.R")
 source("R/insights_centre/disease_counts.R")
 source("R/insights_centre/therapy_counts.R")
+source("R/insights_centre/diagnostics_counts.R")
 ###Collect the relevant data promis global 10-----------------------------------
 source("R/promis_global10/conversion_tables.R")
 source("R/promis_global10/statistics_promis10.R")
