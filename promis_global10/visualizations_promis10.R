@@ -19,7 +19,7 @@ dfPromis10MH <- read.csv(
 #General Health-----------------------------------------------------------------
 pltHistGH <-
   ggplot(
-    dfPromis10GH, 
+    dfPromis10GH,
     aes(x = as.factor(answer_time), fill = as.factor(answer_time))
   ) +
   geom_bar(show.legend = FALSE, width = 0.8) +
@@ -124,6 +124,7 @@ pltBoxPH <-
   ggplot(dfPromis10PHFirst, aes(x = disease, y = tscore, fill = disease)) +
   geom_boxplot() +
   scale_x_discrete(labels = xlabsPH) +
+  ylim(0, 100) +
   labs(
     title = "PROMIS 10 Physical Health T-scores by disease (only 1st response)",
     x = "Numeber of answers",
@@ -154,6 +155,7 @@ pltBoxMH <-
   ggplot(dfPromis10MHFirst, aes(x = disease, y = tscore, fill = disease)) +
   geom_boxplot() +
   scale_x_discrete(labels = xlabsMH) +
+  ylim(0, 100) +
   labs(
     title = "PROMIS 10 Mental Health T-scores by disease (only 1st response)",
     x = "Numeber of answers",

@@ -5,54 +5,12 @@ promis10Concepts <- c(
   40764343, 40764344, 40764345, 40764346, 40764347
 )
 
-sqlPromis10 <- translate(
-  "with disease as (
-      SELECT person_id, condition_concept_id, condition_start_date
-      FROM (
-          SELECT
-              person_id,
-              condition_concept_id,
-              condition_start_date,
-              ROW_NUMBER() OVER (
-                  PARTITION BY person_id
-                  ORDER BY condition_start_date DESC
-              ) AS rn
-          FROM @databaseSchema.condition_occurrence
-          WHERE condition_concept_id IN (@diseaseConcepts)
-      ) sub
-      WHERE rn = 1
-   ), response as (
-       select person_id, 
-              observation_concept_id, value_as_concept_id,
-              observation_date
-       from @databaseSchema.observation
-       where observation_concept_id in (@questionConcepts)
-   )
-   select response.person_id,
-       response.observation_concept_id as question_concept_id, 
-       response.value_as_concept_id as answer_concept_id,
-       response.observation_date as questionnaire_date,
-       disease.condition_concept_id as disease_concept_id,
-       disease.condition_start_date as disease_first_diagnosis_date
-   from response
-   left join disease
-       on disease.person_id = response.person_id
-   order by response.person_id, response.observation_date asc",
-  targetDialect = sqlDialect
-)
-
 dfPromis10 <- querySql(
   connection,
   render(
     sqlPromis10,
     databaseSchema = databaseSchema,
-    diseaseConcepts = paste0(c(
-      diabetesCS$concept_id,
-      ibdCS$concept_id,
-      bcCS$concept_id,
-      lcCS$concept_id
-    ),
-    collapse = ","),
+    diseaseConcepts = c(2010000001, 2010000002, 2010000003, 2010000004),
     questionConcepts = questionConcepts
   )
 )
@@ -63,11 +21,11 @@ names(dfPromis10) <- tolower(names(dfPromis10))
 dfPromis10 <- dfPromis10 %>% 
   mutate(
     disease = case_when(
-      disease_concept_id %in% diabetesCS$concept_id ~ "Diabetes",
-      disease_concept_id %in% ibdCS$concept_id      ~ "IBD",
-      disease_concept_id %in% bcCS$concept_id       ~ "Breast cancer",
-      disease_concept_id %in% lcCS$concept_id       ~ "Lung cancer",
-      TRUE                                          ~ "Unspecified disease"
+      disease_concept_id %in% 2010000001 ~ "Diabetes",
+      disease_concept_id %in% 2010000002 ~ "IBD",
+      disease_concept_id %in% 2010000003 ~ "Breast cancer",
+      disease_concept_id %in% 2010000004 ~ "Lung cancer",
+      TRUE                               ~ "Unspecified disease"
     )
   )
 
@@ -104,14 +62,14 @@ write.csv(
 )
 
 
-### Quality of life score (Only 2nd question)------------------------------------
+### Quality of life score (Only 2nd question)-----------------------------------
 dfPromis10QL <- subset(
   dfPromis10, dfPromis10$question_number == 'Q2'
 )
 
 write.csv(
   dfPromis10QL,
-  file.path(resultsDirectory,"promis10_quality_life_score.csv"),
+  file.path(resultsDirectory, "promis10_quality_life_score.csv"),
   row.names = FALSE
 )
 
@@ -123,7 +81,7 @@ dfPromis10PH <- subset(
 
 dfPromis10PHTotal <- dfPromis10PH %>%
   group_by(person_id, answer_time, disease) %>%
-  summarise(total_score = sum(answer_value, na.rm = TRUE), 
+  summarise(total_score = sum(answer_value, na.rm = TRUE),
             .groups = "drop")
 
 write.csv(
@@ -145,6 +103,6 @@ dfPromis10MHTotal <- dfPromis10MH %>%
 
 write.csv(
   dfPromis10MHTotal,
-  file.path(resultsDirectory,"promis10_mental_health_total_score.csv"),
+  file.path(resultsDirectory, "promis10_mental_health_total_score.csv"),
   row.names = FALSE
 )
