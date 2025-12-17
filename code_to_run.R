@@ -13,7 +13,7 @@ library(viridis)
 
 ### Create the connection & output directory------------------------------------
 #Set working directory to the H2O folder
-setwd("~/H2O")
+setwd("~/H2O-visualizations")
 
 #Create results directory
 resultsDirectory <- "results"
@@ -49,14 +49,14 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
 connection <- DatabaseConnector::connect(connectionDetails)
 
 ###Collect the relevant data insights centre------------------------------------
-source("R/insights_centre/number_of_persons.R")
-source("R/insights_centre/sql_queries.R")
-source("R/insights_centre/disease_counts.R")
-source("R/insights_centre/therapy_counts.R")
-source("R/insights_centre/diagnostics_counts.R")
+source("insights_centre/number_of_persons.R")
+source("insights_centre/sql_queries.R")
+source("insights_centre/disease_counts.R")
+source("insights_centre/therapy_counts.R")
+source("insights_centre/diagnostics_counts.R")
 ###Collect the relevant data promis global 10-----------------------------------
-source("R/promis_global10/conversion_tables.R")
-source("R/promis_global10/statistics_promis10.R")
+source("promis_global10/conversion_tables.R")
+source("promis_global10/statistics_promis10.R")
 
 disconnect(connection)
 
@@ -65,9 +65,9 @@ disconnect(connection)
 # source("R/extra/combine_results_promis10.R")
 
 ###Create plots insights centre-------------------------------------------------
-source("R/insights_centre/visualizations_insights_centre.R")
+source("insights_centre/visualizations_insights_centre.R")
 # source("R/insights_centre/visualizations_insights_centre_additional.R")
 
 ###Create plots promis global 10------------------------------------------------
-source("R/promis_global10/visualizations_promis10.R")
+source("promis_global10/visualizations_promis10.R")
 # source("R/promis_global10/visualizations_promis10_additional.R")
