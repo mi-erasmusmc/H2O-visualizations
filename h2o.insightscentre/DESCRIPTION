@@ -1,0 +1,22 @@
+Package: h2o.insightscentre
+Type: Package
+Title: Insights Centre analysis and visualisations
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@example.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports:
+    DatabaseConnector,
+    SqlRender,
+    dplyr,
+    ggplot2,
+    viridis

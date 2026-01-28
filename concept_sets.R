@@ -49,7 +49,7 @@ lcCS <- querySql(
   )
 
 #Observation Concept Set
-οbservationCS <- querySql(
+observationCS <- querySql(
   connection,
   render(
     sqlDiseaseDescendants,

@@ -1,44 +1,57 @@
-###PROMIS_GLOBAL_10 questionnaire (all questions)-------------------------------
-sqlPromis10 <- translate(
-  "with disease as (
-       select distinct on (person_id)
-              condition_occurrence.person_id, 
-              condition_occurrence.condition_concept_id,
-              condition_occurrence.condition_start_date
-       from @databaseSchema.condition_occurrence
-       join @databaseSchema.concept
-           on condition_occurrence.condition_concept_id = concept.concept_id
-       where condition_occurrence.condition_concept_id in (@diseaseConcepts)
-   ), response as (
-       select person_id, 
-              observation_concept_id, value_as_concept_id,
-              observation_date
-       from @databaseSchema.observation
-       where observation_concept_id in (@questionConcepts)
-   )
-   select response.person_id,
-       response.observation_concept_id as question_concept_id, 
-       response.value_as_concept_id as answer_concept_id,
-       response.observation_date as questionnaire_date,
-       disease.condition_concept_id as disease_concept_id,
-       disease.condition_start_date as disease_first_diagnosis_date
-   from response
-   left join disease
-       on disease.person_id = response.person_id
-   order by response.person_id, response.observation_date asc",
+### PROMIS_GLOBAL_10 questionnaire (all questions)-------------------------------
+
+# 1. Define the RAW SQL template as a string. DO NOT translate yet.
+sql_template <- "
+ with disease as (
+     select distinct on (person_id)
+            condition_occurrence.person_id,
+            condition_occurrence.condition_concept_id,
+            condition_occurrence.condition_start_date
+     from @databaseSchema.condition_occurrence
+     join @databaseSchema.concept
+         on condition_occurrence.condition_concept_id = concept.concept_id
+     where {@diseaseConcepts == ''} ? {1 = 0} : {condition_occurrence.condition_concept_id in (@diseaseConcepts)}
+ ), response as (
+     select person_id,
+            observation_concept_id, value_as_concept_id,
+            observation_date
+     from @databaseSchema.observation
+     where {@questionConcepts == ''} ? {1 = 0} : {observation_concept_id in (@questionConcepts)}
+ )
+ select response.person_id,
+     response.observation_concept_id as question_concept_id,
+     response.value_as_concept_id as answer_concept_id,
+     response.observation_date as questionnaire_date,
+     disease.condition_concept_id as disease_concept_id,
+     disease.condition_start_date as disease_first_diagnosis_date
+ from response
+ left join disease
+     on disease.person_id = response.person_id
+ order by response.person_id, response.observation_date asc
+"
+
+# 2. RENDER the template first.
+# This replaces all @variables and resolves all {...} conditional logic.
+# (This includes the paste0() fix from before)
+sql_rendered <- render(
+  sql_template,
+  databaseSchema = databaseSchema,
+  diseaseConcepts = paste0(c(diabetesCS$concept_id, ibdCS$concept_id,
+                             bcCS$concept_id, lcCS$concept_id),
+                           collapse = ","),
+  questionConcepts = paste0(questionConcepts, collapse = ",")
+)
+
+# 3. NOW, TRANSLATE the final rendered SQL.
+sql_translated <- translate(
+  sql_rendered,
   targetDialect = sqlDialect
 )
 
+# 4. Execute the translated query
 dfPromis10 <- querySql(
   connection,
-  render(
-    sqlPromis10,
-    databaseSchema = databaseSchema,
-    diseaseConcepts = paste0(c(diabetesCS$concept_id,ibdCS$concept_id,
-                               bcCS$concept_id,lcCS$concept_id), 
-                             collapse = ","),
-    questionConcepts = questionConcepts
-  )
+  sql_translated
 )
 
 names(dfPromis10) <- tolower(names(dfPromis10))

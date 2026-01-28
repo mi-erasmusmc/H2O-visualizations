@@ -12,7 +12,7 @@ library(viridis)
 
 ### Create the connection & output directory------------------------------------
 #Set working directory to the H2O folder
-setwd("~/H2O")
+#setwd("~/H2O")
 
 #Create results directory
 resultsDirectory <- "results"
@@ -21,15 +21,15 @@ plotsDirectory <- "plots"
 dir.create(plotsDirectory)
 
 #Variables
-dbms <- ""
-server <- ""
-user <- ""
-password <- ""
-port <- 
-pathToDriver <- ""
+dbms <- "postgresql"
+server <- "localhost/postgres"
+user <- "postgres"
+password <- "password"
+port <- 5434
+pathToDriver <- system.file("driver", package = "h2o.insightscentre")
 
-databaseSchema <- ""
-sqlDialect <- "" 
+databaseSchema <- "omopcdm_synthetic"
+sqlDialect <- "postgresql"
 #supported dialects: 
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite, 
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
@@ -50,13 +50,13 @@ connection <- DatabaseConnector::connect(connectionDetails)
 
 
 ###Collect the relevant data----------------------------------------------------
-source("R/concept_sets.R")
-source("R/conversion_tables.R")
-source("R/statistics_insights_centre.R")
-source("R/statistics_PROMIS_GLOBAL_10.R")
+source("./concept_sets.R")
+source("./conversion_tables.R")
+source("./statistics_insights_centre.R")
+source("./statistics_PROMIS_GLOBAL_10.R")
 
 disconnect(connection)
 
 ###Create plots-----------------------------------------------------------------
-source("R/visualizations_insights_centre.R")
-source("R/visualizations_PROMIS_GLOBAL_10.R")
+source("./visualizations_insights_centre.R")
+source("./visualizations_PROMIS_GLOBAL_10.R")

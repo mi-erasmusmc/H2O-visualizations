@@ -78,14 +78,16 @@ sqlDiseaseCS <-  translate(
   "select (
     select count(distinct person_id)
       from @databaseSchema.condition_occurrence
-      where condition_concept_id in (@diseaseConceptSet)
+      where {@diseaseConceptSet == ''} ? {1 = 0} : {condition_concept_id in (@diseaseConceptSet)}
     ) 
     + (
     select count(distinct person_id)
       from @databaseSchema.observation
-      where observation_concept_id in (@observationConceptSet)
+      where {@observationConceptSet == '' | @diseaseConceptSet == ''} ? {1 = 0} : {
+        observation_concept_id in (@observationConceptSet)
         and value_as_concept_id in (@diseaseConceptSet)
-    )",
+      }
+    ) AS count",
   targetDialect = sqlDialect
   )
 
@@ -136,8 +138,8 @@ lcCounts <- querySql(
 dfDiseaseCounts <- data.frame(
   disease=c("diabetes","ibd","bc","lc"),
   counts=c(
-    diabetesCounts[["count"]],ibdCounts[["count"]],bcCounts[["count"]],
-    lcCounts[["count"]])
+    diabetesCounts[["COUNT"]],ibdCounts[["COUNT"]],bcCounts[["COUNT"]],
+    lcCounts[["COUNT"]])
   )
 
 

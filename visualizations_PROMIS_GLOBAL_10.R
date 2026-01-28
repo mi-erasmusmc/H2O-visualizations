@@ -181,59 +181,69 @@ dev.off()
 #Physical health box plot-------------------------------------------------------
 #Add the calculated t-scores
 dfPromis10PH <- dfPromis10PH %>%
-  left_join(conversionPH, by="total_score")
+  left_join(conversionPHScore, by="total_score")
 
-#Keep only the 1st time the patient responded to the questionnaire
-dfPromis10PHFirst <- subset(dfPromis10PH, answer_time == 1)
+if (nrow(dfPromis10PH) > 0) {
 
-#Count the number of responses for each disease
-xlabsPH <- paste(
-  levels(dfPromis10PHFirst$disease),
-  "\n(N=",table(dfPromis10PHFirst$disease),")",
-  sep = ""
-  )
+  # Convert to factor
+  dfPromis10PH$disease <- as.factor(dfPromis10PH$disease)
 
-#Plot
-pltBoxPH <- 
-  ggplot(dfPromis10PHFirst, aes(x=disease, y=tscore, fill=disease)) + 
-  geom_boxplot() + 
-  scale_x_discrete(labels=xlabsPH) +
-  labs(
-    title = "PROMIS 10 Physical Health T-scores by disease (only 1st response)",
-    x = "Numeber of answers",
-    y = "t-score",
-    fill = "Direction"
-    )
-jpeg(file.path(plotsDirectory,"tscore_physical_health.jpg"))
-print(pltBoxPH)
-dev.off()
+    #Count the number of responses for each disease
+    xlabsPH <- paste(
+      levels(dfPromis10PH$disease),
+      "\n(N=",table(dfPromis10PH$disease),")",
+      sep = ""
+      )
+
+    #Plot
+    pltBoxPH <-
+      ggplot(dfPromis10PH, aes(x=disease, y=tscore, fill=disease)) +
+      geom_boxplot() +
+      scale_x_discrete(labels=xlabsPH) +
+      labs(
+        title = "PROMIS 10 Physical Health T-scores by disease (only 1st response)",
+        x = "Numeber of answers",
+        y = "t-score",
+        fill = "Direction"
+        )
+    jpeg(file.path(plotsDirectory,"tscore_physical_health.jpg"))
+    print(pltBoxPH)
+    dev.off()
+} else {
+  print("Skipping Physical Health T-score plot: No data in dfPromis10PH.")
+}
 
 #Mental health box plot---------------------------------------------------------
 #Add the calculated t-scores
 dfPromis10MH <- dfPromis10MH %>%
-  left_join(conversionMH, by="total_score")
+  left_join(conversionMHScore, by="total_score")
 
-#Keep only the 1st time the patient responded to the questionnaire
-dfPromis10MHFirst <- subset(dfPromis10MH, answer_time == 1)
+if (nrow(dfPromis10MH) > 0) {
 
-#Count the number of responses for each disease
-xlabsMH <- paste(
-  levels(dfPromis10MHFirst$disease),
-  "\n(N=",table(dfPromis10MHFirst$disease),")",
-  sep = ""
-)
+  # Convert to factor
+  dfPromis10MH$disease <- as.factor(dfPromis10MH$disease)
 
-#Plot
-pltBoxMH <- 
-  ggplot(dfPromis10MHFirst, aes(x=disease, y=tscore, fill=disease)) + 
-  geom_boxplot() + 
-  scale_x_discrete(labels=xlabsMH) +
-  labs(
-    title = "PROMIS 10 Mental Health T-scores by disease (only 1st response)",
-    x = "Numeber of answers",
-    y = "t-score",
-    fill = "Direction"
-  )
-jpeg(file.path(plotsDirectory,"tscore_mental_health.jpg"))
-print(pltBoxMH)
-dev.off()
+    #Count the number of responses for each disease
+    xlabsMH <- paste(
+      levels(dfPromis10MH$disease),
+      "\n(N=",table(dfPromis10MH$disease),")",
+      sep = ""
+    )
+
+    #Plot
+    pltBoxMH <-
+      ggplot(dfPromis10MH, aes(x=disease, y=tscore, fill=disease)) +
+      geom_boxplot() +
+      scale_x_discrete(labels=xlabsMH) +
+      labs(
+        title = "PROMIS 10 Mental Health T-scores by disease (only 1st response)",
+        x = "Numeber of answers",
+        y = "t-score",
+        fill = "Direction"
+      )
+    jpeg(file.path(plotsDirectory,"tscore_mental_health.jpg"))
+    print(pltBoxMH)
+    dev.off()
+} else {
+  print("Skipping Mental Health T-score plot: No data in dfPromis10MH.")
+}
