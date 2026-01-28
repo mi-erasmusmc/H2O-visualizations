@@ -1,0 +1,50 @@
+{
+  "name": "insights_centre_statistics",
+  "image": "insights_centre_statistics",
+  "vantage6_version": "4.6",
+  "code_url": "https://mygitrepo.org",
+  "documentation_url": "",
+  "partitioning": "horizontal",
+  "functions": [
+    {
+      "name": "central",
+      "description": "H2O Insights Centre statistics calculations for visualisations",
+      "type": "central",
+      "databases": [
+        {
+          "name": "Partial database 1"
+        },
+        {
+          "name": "Central database 1"
+        },
+        {
+          "name": "Central database 2"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "arg1",
+          "type": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "partial",
+      "description": "",
+      "type": "federated",
+      "databases": [
+        {
+          "name": "Database 1"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "arg1",
+          "type": "",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}
