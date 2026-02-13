@@ -73,15 +73,16 @@ dietExerciseCounts <- querySql(
 )
 
 #Oral Agents
-oralAgentsCounts <- querySql(
-  connection,
-  render(
-    sqlCountsDrugs,
-    databaseSchema = databaseSchema,
-    conceptSet = paste0(oralAgents$concept_id, collapse = ","),
-    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
-  )
-)
+# Commented by Adnan Feb 2026
+#oralAgentsCounts <- querySql(
+#  connection,
+#  render(
+#    sqlCountsDrugs,
+#    databaseSchema = databaseSchema,
+#    conceptSet = paste0(oralAgentsCS$concept_id, collapse = ","),
+#    observationConceptSet = paste0(observationCS$concept_id, collapse = ",")
+#  )
+#)
 
 #insulin
 insulinCounts <- querySql(
