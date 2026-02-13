@@ -8,7 +8,7 @@ This repository contains code to:
 - The code is intented to run against data from three hospitals available - Erasmus Medical Centre Rotterdam, Medical University of Vienna, Vall d'Hebron University Hospital Barcelona. 
 - All data used are mapped to an [OMOP CDM](https://ohdsi.github.io/CommonDataModel/index.html) database.
 
-# Custom observations
+# Custom observations     
 There are differences in how the patients are recruited for each disease in the hospitals above and for the analysis we aim to perform here we decided to create an additional observation, with a custom codes to represent the primary disease. The `observation_concept_id` would still consist of a standard concept `44807982, Participant in research study` and the custom concept will represent the `value_as_concept_id`. 
 
 Adding the custom concepts in the vocabulary tables and the observation table as seen below.
