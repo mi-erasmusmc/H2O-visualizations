@@ -38,9 +38,32 @@ for (db in dbNames){
   }
 }
 
-dfAgeCombined$n <- rowSums(
-  dfAgeCombined[, names(dfAgeCombined) != "ageGroups"]
-)
+
+# Added By Adnan Feb 2026
+# start here ===> 
+# Calculate total counts across DB columns robustly:
+numericCols <- setdiff(names(dfAgeCombined), "ageGroups")
+
+if (length(numericCols) == 0) {
+  # No numeric columns found -> create a zero column
+  dfAgeCombined$n <- 0
+} else {
+  # Ensure numeric columns are numeric (handle factors/characters)
+  dfAgeCombined[numericCols] <- lapply(dfAgeCombined[numericCols], function(x) {
+    xNum <- suppressWarnings(as.numeric(as.character(x)))
+    xNum
+  })
+  # Replace NAs with 0 so rowSums treats missing as zero contribution
+  dfAgeCombined[numericCols] <- lapply(dfAgeCombined[numericCols], function(x) {
+    x[is.na(x)] <- 0
+    x
+  })
+  # Force a 2-D matrix even when there's only one numeric column
+  dfAgeCombined$n <- rowSums(as.matrix(dfAgeCombined[, numericCols, drop = FALSE]))
+}
+#<=== end here
+
+
 
 write.csv(
   dfAgeCombined,
