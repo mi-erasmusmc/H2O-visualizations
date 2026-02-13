@@ -22,9 +22,9 @@ queryCountsLifeStyle <-  "select count(distinct person_id)
       from @databaseSchema.observation
       where observation_concept_id in (@conceptSet)"
 
-if (sqlDialect == "oracle") {
-  query <- paste(sqlCounts, "FROM DUAL")
-}
+#if (sqlDialect == "oracle") {
+#  query <- paste(sqlCounts, "FROM DUAL")
+#}
 
 sqlCountsLifeStyle <-  translate(
   queryCountsLifeStyle,
@@ -44,9 +44,9 @@ queryCountsDrugs <-  "select count(distinct person_id)
           and value_as_concept_id in (@conceptSet)
       )"
 
-if (sqlDialect == "oracle") {
-  query <- paste(sqlCounts, "FROM DUAL")
-}
+#if (sqlDialect == "oracle") {
+#  query <- paste(sqlCounts, "FROM DUAL")
+#}
 
 sqlCountsDrugs <-  translate(
   queryCountsDrugs,
@@ -68,9 +68,9 @@ queryCountsDiagnostics <-  "select count(distinct person_id)
           and value_as_concept_id in (@conceptSet)
       )"
 
-if (sqlDialect == "oracle") {
-  query <- paste(sqlCounts, "FROM DUAL")
-}
+#if (sqlDialect == "oracle") {
+#  query <- paste(sqlCounts, "FROM DUAL")
+#}
 
 sqlCountsDiagnostics <-  translate(
   queryCountsDiagnostics,
