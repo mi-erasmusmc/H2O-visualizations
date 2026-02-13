@@ -9,10 +9,11 @@ library(SqlRender)
 library(dplyr)
 library(ggplot2)
 library(viridis)
+ 
 
 ### Create the connection & output directory------------------------------------
 #Set working directory to the H2O folder
-setwd("~/H2O")
+setwd("~/H2O-visualizations-ADJ")
 
 #Pass the separate database names with the relevant data
 dbNames <- c("db1", "db2", "db3", "db4")
@@ -38,15 +39,15 @@ sqlDialect <- ""
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
 
 ### Import MUW db credentials, ignore if not available -------------------------
-if (file.exists('R/muw.db.R')) {
-  source("R/muw.db.R")
+if (file.exists(file.path(getwd(), 'muw.db.R'))) {
+  source(file.path(getwd(), 'muw.db.R'))
 }
 
 for (db in dbNames){
   #Create results directory
   resultsDirectory <- paste0(resultsDir, db)
   dir.create(resultsDirectory)
-  if (file.exists('R/muw.db.R')) {
+  if (file.exists(file.path(getwd(), 'muw.db.R'))) {
     #Connect to the db: MUW style
     connectionDetails <- DatabaseConnector::createConnectionDetails(
       dbms = dbms,
@@ -69,20 +70,29 @@ for (db in dbNames){
     )
     connection <- DatabaseConnector::connect(connectionDetails)
   }
+  
+  
+  
+  
+  
   #Collect the relevant data insights centre
-  source("R/insights_centre/number_of_persons.R")
-  source("R/insights_centre/disease_counts.R")
-  source("R/insights_centre/therapy_counts.R")
+  source(file.path(getwd(), "insights_centre/sql_queries.R"))
+  source(file.path(getwd(), "insights_centre/number_of_persons.R"))
+  source(file.path(getwd(), "insights_centre/disease_counts.R"))
+  #source(file.path(getwd(), "insights_centre/therapy_counts.R"))
   #Collect the relevant data promis global 10
-  source("R/promis_global10/conversion_tables.R")
-  source("R/promis_global10/statistics_promis10.R")
+  source(file.path(getwd(), "promis_global10/conversion_tables.R"))
+  source(file.path(getwd(), "promis_global10/statistics_promis10.R"))
   disconnect(connection)
 }
 resultsDirectory <- resultsDir
 
+
+
+
 ###Combine results--------------------------------------------------------------
-source("R/extra/combine_results_insights_centre.R")
-source("R/extra/combine_results_promis10.R")
+source(file.path(getwd(), "extra/combine_results_insights_centre.R"))
+source(file.path(getwd(), "extra/combine_results_promis10.R"))
 
 #Delete the separate folders
 for (db in dbNames){
@@ -93,6 +103,6 @@ for (db in dbNames){
 ###Create plots-----------------------------------------------------------------
 resultsDirectory <- resultsDir
 
-source("R/insights_centre/visualizations_insights_centre.R")
-source("R/promis_global10/visualizations_promis10.R")
-# source("R/promis_global10/visualizations_promis10_additional.R")
+source(file.path(getwd(), "insights_centre/visualizations_insights_centre.R"))
+source(file.path(getwd(), "promis_global10/visualizations_promis10.R"))
+# source(file.path(getwd(), "promis_global10/visualizations_promis10_additional.R"))
