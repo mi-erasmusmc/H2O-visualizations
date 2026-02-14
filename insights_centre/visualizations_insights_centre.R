@@ -44,45 +44,45 @@ jpeg(file.path(plotsDirectory, "num_persons_strat_gender.jpg"))
 print(pltGender)
 dev.off()
 
-###Disease counts---------------------------------------------------------------
-diseaseCounts <- read.csv(
-  file.path(resultsDirectory, "disease_counts.csv")
-)
-
-pltDisease <-
-  ggplot(
-    diseaseCounts,
-    aes(x = counts, y = disease, fill = disease)
-  ) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  labs(
-    x = "Number of persons",
-    y = "H2O disease group",
-    title = "Number of persons per disease"
-  )
-jpeg(file.path(plotsDirectory, "num_persons_disease.jpg"))
-print(pltDisease)
-dev.off()
-
-###Therapy counts---------------------------------------------------------------
-#Diabetes therapy---------------------------------------------------------------
-therapyCounts <- read.csv(
-  file.path(resultsDirectory, "therapy_counts.csv")
-)
-
-pltDisease <-
-  ggplot(
-    therapyCounts,
-    aes(x = counts, y = therapy, fill = therapy)
-  ) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  labs(
-    x = "Number of persons",
-    y = "Diabetes therapy group",
-    title = "Number of persons per therapy"
-  )
-jpeg(file.path(plotsDirectory, "num_persons_diabetes_therapy.jpg"))
-print(pltDisease)
-dev.off()
+# ###Disease counts---------------------------------------------------------------
+# diseaseCounts <- read.csv(
+#   file.path(resultsDirectory, "disease_counts.csv")
+# )
+# 
+# pltDisease <-
+#   ggplot(
+#     diseaseCounts,
+#     aes(x = counts, y = disease, fill = disease)
+#   ) +
+#   geom_bar(stat = "identity") +
+#   theme_minimal() +
+#   labs(
+#     x = "Number of persons",
+#     y = "H2O disease group",
+#     title = "Number of persons per disease"
+#   )
+# jpeg(file.path(plotsDirectory, "num_persons_disease.jpg"))
+# print(pltDisease)
+# dev.off()
+# 
+# ###Therapy counts---------------------------------------------------------------
+# #Diabetes therapy---------------------------------------------------------------
+# therapyCounts <- read.csv(
+#   file.path(resultsDirectory, "therapy_counts.csv")
+# )
+# 
+# pltDisease <-
+#   ggplot(
+#     therapyCounts,
+#     aes(x = counts, y = therapy, fill = therapy)
+#   ) +
+#   geom_bar(stat = "identity") +
+#   theme_minimal() +
+#   labs(
+#     x = "Number of persons",
+#     y = "Diabetes therapy group",
+#     title = "Number of persons per therapy"
+#   )
+# jpeg(file.path(plotsDirectory, "num_persons_diabetes_therapy.jpg"))
+# print(pltDisease)
+# dev.off()
