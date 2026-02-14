@@ -57,7 +57,7 @@ if (file.exists(file.path(getwd(), 'muw.db.R'))) {
   source(file.path(getwd(), 'muw.db.R'))
 }
 
-for (db in dbNames){
+db <- dbNames[1]
   #Create results directory
   resultsDirectory <- paste0(resultsDir, db)
   dir.create(resultsDirectory)
@@ -96,11 +96,12 @@ for (db in dbNames){
   
   # Therapycount is not relevant for the T-score plots
   #source(file.path(getwd(), "insights_centre/therapy_counts.R"))
+  
   #Collect the relevant data promis global 10
   source(file.path(getwd(), "promis_global10/conversion_tables.R"))
   source(file.path(getwd(), "promis_global10/statistics_promis10.R"))
   disconnect(connection)
-}
+
 resultsDirectory <- resultsDir
 
 
@@ -111,7 +112,7 @@ resultsDirectory <- resultsDir
 # Adnan 13.02.2026, we don't need to combine results, since we have now only DM, next line is therefore may be commented. 
 source(file.path(getwd(), "extra/combine_results_insights_centre.R"))
 
-source(file.path(getwd(), "extra/combine_results_promis10.R"))
+#source(file.path(getwd(), "extra/combine_results_promis10.R"))
 
 #Delete the separate folders
 for (db in dbNames){
