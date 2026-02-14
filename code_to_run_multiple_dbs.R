@@ -92,9 +92,9 @@ db <- dbNames[1]
   #Collect the relevant data insights centre
   source(file.path(getwd(), "insights_centre/sql_queries.R"))
   source(file.path(getwd(), "insights_centre/number_of_persons.R"))
-  source(file.path(getwd(), "insights_centre/disease_counts.R"))
-  
-  # Therapycount is not relevant for the T-score plots
+
+  # Therapy and disease count are not relevant for the paper
+  #source(file.path(getwd(), "insights_centre/disease_counts.R"))
   #source(file.path(getwd(), "insights_centre/therapy_counts.R"))
   
   #Collect the relevant data promis global 10
