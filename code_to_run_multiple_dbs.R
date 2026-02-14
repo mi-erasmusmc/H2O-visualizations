@@ -105,20 +105,23 @@ db <- dbNames[1]
 resultsDirectory <- resultsDir
 
 
+# Copy results from disease folder to "results" folder
+mainResultsFolder <- resultsDir
+DMResultsFolder <- paste0(resultsDir, db)
+file.copy(list.files(DMResultsFolder, full.names = TRUE), mainResultsFolder, overwrite = TRUE)
+
 
 
 ###Combine results--------------------------------------------------------------
 
-# Adnan 13.02.2026, we don't need to combine results, since we have now only DM, next line is therefore may be commented. 
-source(file.path(getwd(), "extra/combine_results_insights_centre.R"))
-
+# Adnan 13.02.2026, we don't need to combine results, since we have now only DM, next twos lines are therefore may be commented. 
+#source(file.path(getwd(), "extra/combine_results_insights_centre.R"))
 #source(file.path(getwd(), "extra/combine_results_promis10.R"))
 
 #Delete the separate folders
-for (db in dbNames){
-  resultsDirectory <- paste0(resultsDir, db)
-  unlink(resultsDirectory, recursive = TRUE)
-}
+resultsDirectory <- paste0(resultsDir, db)
+unlink(resultsDirectory, recursive = TRUE)
+
 
 ###Create plots-----------------------------------------------------------------
 resultsDirectory <- resultsDir
