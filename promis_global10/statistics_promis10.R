@@ -8,23 +8,16 @@ promis10Concepts <- c(
 # Added by Adnan Feb 2026
 sqlPromis10 <- translate(
   "with disease as (
-      SELECT person_id, condition_concept_id, condition_start_date
-      FROM (
-          SELECT
-              person_id,
-              condition_concept_id,
-              condition_start_date,
-              ROW_NUMBER() OVER (
-                  PARTITION BY person_id
-                  ORDER BY condition_start_date DESC
-              ) AS rn
-          FROM @databaseSchema.condition_occurrence
-          WHERE condition_concept_id IN (@diseaseConcepts)
-      ) sub
-      WHERE rn = 1
+      SELECT 
+        person_id, 
+        value_as_concept_id
+      FROM @databaseSchema.observation
+          WHERE observation_concept_id = 44807982
+             and value_as_concept_id IN (@diseaseConcepts)
    ), response as (
        select person_id, 
-              observation_concept_id, value_as_concept_id,
+              observation_concept_id, 
+              value_as_concept_id,
               observation_date
        from @databaseSchema.observation
        where observation_concept_id in (@questionConcepts)
@@ -33,14 +26,14 @@ sqlPromis10 <- translate(
        response.observation_concept_id as question_concept_id, 
        response.value_as_concept_id as answer_concept_id,
        response.observation_date as questionnaire_date,
-       disease.condition_concept_id as disease_concept_id,
-       disease.condition_start_date as disease_first_diagnosis_date
+       disease.value_as_concept_id as disease_concept_id
    from response
    left join disease
        on disease.person_id = response.person_id
    order by response.person_id, response.observation_date asc",
   targetDialect = sqlDialect
 )
+
 
 sqlDiseaseDescendants <-  translate(
   "select concept_id from @databaseSchema.concept_ancestor 
@@ -78,14 +71,11 @@ dfPromis10 <- querySql(
 
 names(dfPromis10) <- tolower(names(dfPromis10))
 
+
+
 #Group by disease
 dfPromis10 <- dfPromis10 %>% 
-  mutate(
-    disease = case_when(
-      disease_concept_id %in% diabetesCS$concept_id ~ "Diabetes",
-      TRUE                                          ~ "Unspecified disease"
-    )
-  )
+  mutate(disease = "Diabetes")
 
 #Add the question number to identify the questions easily
 dfPromis10 <- dfPromis10 %>%
