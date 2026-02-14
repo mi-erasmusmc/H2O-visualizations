@@ -1,9 +1,26 @@
+### Clean environment, memory, and consoles 
+# clean all environment variables 
+rm(list = ls(all.names = TRUE))
+# free memory
+gc()
+#clean the consoles
+cat("\014")
+
+
+
+### Create the connection & output directory------------------------------------
+#Set working directory to the H2O folder
+setwd("~/H2O-visualizations-ADJ")
+
+
 ### Libraries required----------------------------------------------------------
 # install.packages('DatabaseConnector')
 # install.packages('dplyr')
 # install.packages('ggplot2')
 # install.packages('viridis')
-# install.packages("~/viridis_0.6.5.tar.gz", repos = NULL, type="source")
+#install.packages("viridis_0.6.5.tar.gz", repos = NULL, type="source")
+
+if (!require("viridis")) install.packages("viridis_0.6.5.tar.gz", repos = NULL, type = "source")
 library(DatabaseConnector)
 library(SqlRender)
 library(dplyr)
@@ -11,9 +28,6 @@ library(ggplot2)
 library(viridis)
  
 
-### Create the connection & output directory------------------------------------
-#Set working directory to the H2O folder
-setwd("~/H2O-visualizations-ADJ")
 
 #Pass the separate database names with the relevant data
 dbNames <- c("db1", "db2", "db3", "db4")
@@ -79,6 +93,8 @@ for (db in dbNames){
   source(file.path(getwd(), "insights_centre/sql_queries.R"))
   source(file.path(getwd(), "insights_centre/number_of_persons.R"))
   source(file.path(getwd(), "insights_centre/disease_counts.R"))
+  
+  # Therapycount is not relevant for the T-score plots
   #source(file.path(getwd(), "insights_centre/therapy_counts.R"))
   #Collect the relevant data promis global 10
   source(file.path(getwd(), "promis_global10/conversion_tables.R"))
@@ -91,7 +107,10 @@ resultsDirectory <- resultsDir
 
 
 ###Combine results--------------------------------------------------------------
+
+# Adnan 13.02.2026, we don't need to combine results, since we have now only DM, next line is therefore may be commented. 
 source(file.path(getwd(), "extra/combine_results_insights_centre.R"))
+
 source(file.path(getwd(), "extra/combine_results_promis10.R"))
 
 #Delete the separate folders
