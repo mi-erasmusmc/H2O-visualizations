@@ -12,6 +12,7 @@ conversionQuestionCTS <- tibble(
 ###Map concept_ids to the corresponding numeric value for calculations----------
 conversionAnswerCTN <- tibble(
   answer_concept_id = c(
+    36210124, 45878583, 1989914, 45884091, 1621208, 45884084, 1620714,
     45881924, 45884457, 45876386, 45876387, 45876751,
     45879118, 45878070, 45884554, 45876949, 45883172,
     45876662, 45876672, 45882528, 45884455, 45882536,
@@ -20,6 +21,7 @@ conversionAnswerCTN <- tibble(
     45878730, 45878254, 45878731, 45882130, 45884157, 46237547
   ),
   answer_value = c(
+    7, 6, 5, 4, 3, 2, 1,
     5, 4, 3, 2, 1,
     5, 4, 3, 2, 1,
     5, 4, 3, 2, 1,
