@@ -29,7 +29,7 @@ password <- ""
 port <- 
 pathToDriver <- ""
 
-databaseSchema <- ""
+databaseSchema <- "h2o_dm_ittm"
 sqlDialect <- ""
 #supported dialects:
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite,
