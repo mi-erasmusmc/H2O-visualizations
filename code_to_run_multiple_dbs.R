@@ -21,6 +21,8 @@ setwd("~/H2O-visualizations-ADJ")
 #install.packages("viridis_0.6.5.tar.gz", repos = NULL, type="source")
 
 if (!require("viridis")) install.packages("viridis_0.6.5.tar.gz", repos = NULL, type = "source")
+#if (!require("tidyverse")) install.packages("tidyverse_2.0.0.tar.gz", repos = NULL, type = "source")
+
 library(DatabaseConnector)
 library(SqlRender)
 library(dplyr)
@@ -98,9 +100,14 @@ db <- dbNames[1]
   #source(file.path(getwd(), "insights_centre/therapy_counts.R"))
   
   #Collect the relevant data promis global 10
-  source(file.path(getwd(), "promis_global10/conversion_tables.R"))
-  source(file.path(getwd(), "promis_global10/statistics_promis10.R"))
-  disconnect(connection)
+  #source(file.path(getwd(), "promis_global10/conversion_tables.R"))
+  #source(file.path(getwd(), "promis_global10/statistics_promis10.R"))
+ 
+  #Collect the relevant data PAID
+  source(file.path(getwd(), "PAID/conversion_tables.R"))
+  source(file.path(getwd(), "PAID/statistics_PAID.R"))
+  
+   disconnect(connection)
 
 resultsDirectory <- resultsDir
 
@@ -127,5 +134,8 @@ unlink(resultsDirectory, recursive = TRUE)
 resultsDirectory <- resultsDir
 
 source(file.path(getwd(), "insights_centre/visualizations_insights_centre.R"))
-source(file.path(getwd(), "promis_global10/visualizations_promis10.R"))
+#source(file.path(getwd(), "promis_global10/visualizations_promis10.R"))
 # source(file.path(getwd(), "promis_global10/visualizations_promis10_additional.R"))
+
+
+source(file.path(getwd(), "PAID/visualizations_PAID.R"))
