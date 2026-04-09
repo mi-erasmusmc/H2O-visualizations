@@ -1,81 +1,23 @@
 ###Read the dfs --------------------
 df1 <- read.csv(
-  file.path(resultsDirectory, "5_1.csv")
+  file.path(resultsDirectory, "5_1_mix.csv")
 )
 
 df2 <- read.csv(
-  file.path(resultsDirectory, "5_2.csv")
+  file.path(resultsDirectory, "5_2_mix.csv")
 )
 
 df3 <- read.csv(
-  file.path(resultsDirectory, "5_3.csv")
+  file.path(resultsDirectory, "5_3_mix.csv")
 )
 
 df4 <- read.csv(
-  file.path(resultsDirectory, "5_4.csv")
+  file.path(resultsDirectory, "5_4_mix.csv")
 )
 
 df5 <- read.csv(
-  file.path(resultsDirectory, "5_5.csv")
+  file.path(resultsDirectory, "5_5_mix.csv")
 )
-
-
-# 1. Open the JPG file device
-# Increased height to 1500 to fit 5 plots comfortably
-jpeg(filename = "plots/PAID_Plots_scatter_plots.jpg", width = 800, height = 1500, quality = 90)
-
-# 2. Set up the grid layout (5 rows, 1 column)
-# 'mar' sets margins: Bottom, Left, Top, Right
-par(mfrow = c(5, 1), mar = c(4, 4, 3, 1))
-
-# --- Plot 1: PAID5_1 ---
-plot(x = jitter(df1$answer_time), 
-     y = jitter(df1$answer_value), 
-     main = "PAID5_1", 
-     xlab = "Answer Time", 
-     ylab = "Answer Value",
-     pch = 19, col = "blue")
-
-# --- Plot 2: PAID5_2 ---
-plot(x = jitter(df2$answer_time), 
-     y = jitter(df2$answer_value), 
-     main = "PAID5_2", 
-     xlab = "Answer Time", 
-     ylab = "Answer Value",
-     pch = 19, col = "blue")
-
-# --- Plot 3: PAID5_3 ---
-plot(x = jitter(df3$answer_time), 
-     y = jitter(df3$answer_value), 
-     main = "PAID5_3", 
-     xlab = "Answer Time", 
-     ylab = "Answer Value",
-     pch = 19, col = "blue")
-
-# --- Plot 4: PAID5_4 ---
-plot(x = jitter(df4$answer_time), 
-     y = jitter(df4$answer_value), 
-     main = "PAID5_4", 
-     xlab = "Answer Time", 
-     ylab = "Answer Value",
-     pch = 19, col = "blue")
-
-# --- Plot 5: PAID5_5 ---
-plot(x = jitter(df5$answer_time), 
-     y = jitter(df5$answer_value), 
-     main = "PAID5_5", 
-     xlab = "Answer Time", 
-     ylab = "Answer Value",
-     pch = 19, col = "blue")
-
-# 3. Close the device to save the file
-dev.off()
-
-
-
-
-
-
 
 
 
@@ -140,34 +82,6 @@ dev.off()
 
 
 
-
-
-
-
-# 1. Open file
-jpeg(filename = "plots/PAID_Overall_Boxplot.jpg", width = 900, height = 600, quality = 90) # Single plot, smaller height
-
-# 2. Layout (1 row, 1 column)
-par(mfrow = c(1, 1), mar = c(5, 5, 4, 2))
-
-# 3. Combine DataFrames
-# We verify columns match before binding
-df_all <- rbind(df1, df2, df3, df4, df5)
-
-# 4. Plot
-boxplot(answer_value ~ factor(answer_time), data = df_all,
-        main = "Overall Diabetes Distress (All Questions Combined)",
-        xlab = "Visit Number",
-        ylab = "Score (0-4)",
-        col = "lightgreen",
-        border = "darkgreen",
-        names = paste(sort(unique(df_all$answer_time)), "Visit"))
-
-# Add a grid for readability
-grid(nx = NA, ny = NULL) 
-
-# 5. Save
-dev.off()
 
 
 
