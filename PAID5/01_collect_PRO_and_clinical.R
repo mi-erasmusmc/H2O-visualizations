@@ -1,6 +1,17 @@
 library(tidyr)
 library(dplyr)
 
+# ==============================================================================
+# 0. Global Settings
+# ==============================================================================
+siteFlag       <- "MUW"             # Set to "MUW" or "EMC"
+matchStrategy  <- "closest_overall"   # Set to "strict_window" or "closest_overall"
+timeWindowDays <- 100                # Maximum allowable days (only applies if matchStrategy is "strict_window")
+
+# ==============================================================================
+# 1. Define SQL Queries
+# ==============================================================================
+
 sqlPAID <- translate(
   "with disease as (
       SELECT 
@@ -29,16 +40,33 @@ sqlPAID <- translate(
   targetDialect = sqlDialect
 )
 
-# SQL Query to retrieve all required clinical measurements
-sqlMeasurements <- translate(
-  "select person_id, 
-          measurement_concept_id, 
-          value_as_number, 
-          measurement_date
-   from @databaseSchema.measurement
-   where measurement_concept_id in (@clinicalConcepts)",
-  targetDialect = sqlDialect
-)
+# SQL Query to retrieve all required clinical measurements based on site
+if (siteFlag == "MUW") {
+  sqlClinical <- translate(
+    "select person_id, 
+            measurement_concept_id, 
+            value_as_number, 
+            measurement_date
+     from @databaseSchema.measurement
+     where measurement_concept_id in (@clinicalConcepts)",
+    targetDialect = sqlDialect
+  )
+  clinicalConceptsToUse <- clinicalConcepts_MUW
+} else if (siteFlag == "EMC") {
+  # For EMC, fetch from observation but alias to measurement columns
+  sqlClinical <- translate(
+    "select person_id, 
+            observation_concept_id as measurement_concept_id, 
+            value_as_number, 
+            observation_date as measurement_date
+     from @databaseSchema.observation
+     where observation_concept_id in (@clinicalConcepts)",
+    targetDialect = sqlDialect
+  )
+  clinicalConceptsToUse <- clinicalConcepts_EMC
+} else {
+  stop("Invalid siteFlag. Must be 'MUW' or 'EMC'.")
+}
 
 sqlDiseaseDescendants <-  translate(
   "select concept_id from @databaseSchema.concept_ancestor 
@@ -48,7 +76,11 @@ sqlDiseaseDescendants <-  translate(
   targetDialect = sqlDialect
 )
 
-#Diabetes Concept Set
+# ==============================================================================
+# 2. Execute Queries and Retrieve Data
+# ==============================================================================
+
+# Diabetes Concept Set
 diabetesCS <- querySql(
   connection, 
   render(
@@ -72,16 +104,20 @@ dfPAID <- querySql(
 )
 names(dfPAID) <- tolower(names(dfPAID))
 
-# Retrieve Clinical Measurements
+# Retrieve Clinical Values
 dfMeasurements <- querySql(
   connection,
   render(
-    sqlMeasurements,
+    sqlClinical,
     databaseSchema = databaseSchema,
-    clinicalConcepts = paste0(clinicalConcepts, collapse = ",")
+    clinicalConcepts = paste0(clinicalConceptsToUse, collapse = ",")
   )
 )
 names(dfMeasurements) <- tolower(names(dfMeasurements))
+
+# ==============================================================================
+# 3. Process and Clean Data
+# ==============================================================================
 
 # Group by disease
 dfPAID <- dfPAID %>% 
@@ -100,24 +136,33 @@ dfPAID$questionnaire_date <- as.numeric(as.Date(dfPAID$questionnaire_date))
 dfMeasurements$measurement_date <- as.numeric(as.Date(dfMeasurements$measurement_date))
 
 
-### Join PROs with Clinical Measurements using a  window ------------------
-timeWindowDays <- 10
+# ==============================================================================
+# 4. Join PROs with Clinical Values based on Match Strategy
+# ==============================================================================
 
-
-# 1. Find valid clinical matches within the time window and isolate the closest ones
-valid_clinical_matches <- dfPAID %>%
+# 1. Base join: calculate distance for all possible matches
+clinical_matches_base <- dfPAID %>%
   left_join(dfMeasurements, by = "person_id", relationship = "many-to-many") %>%
   mutate(date_diff = abs(questionnaire_date - measurement_date)) %>%
-  # Keep ONLY matches within the 7 day window
-  filter(!is.na(date_diff) & date_diff <= timeWindowDays) %>%
-  # Group by person, question, and measurement concept to isolate the absolute closest record
+  filter(!is.na(measurement_date)) # Drop NAs to prevent errors for patients with zero clinical data
+
+# 2. Apply window filter ONLY if the strict strategy is selected
+if (matchStrategy == "strict_window") {
+  clinical_matches_base <- clinical_matches_base %>%
+    filter(date_diff <= timeWindowDays)
+} else if (matchStrategy != "closest_overall") {
+  stop("Invalid matchStrategy. Must be 'strict_window' or 'closest_overall'.")
+}
+
+# 3. Isolate the absolute closest record
+valid_clinical_matches <- clinical_matches_base %>%
   group_by(person_id, question_concept_id, questionnaire_date, measurement_concept_id) %>%
   arrange(date_diff, .by_group = TRUE) %>%
   slice(1) %>%
   ungroup() %>%
   select(person_id, question_concept_id, questionnaire_date, measurement_concept_id, value_as_number)
 
-# 2. Pivot valid measurements and merge back to the unaltered PRO data
+# 4. Pivot valid measurements and merge back to the unaltered PRO data
 if (nrow(valid_clinical_matches) > 0) {
   clinical_wide <- valid_clinical_matches %>%
     pivot_wider(
@@ -127,26 +172,44 @@ if (nrow(valid_clinical_matches) > 0) {
     )
   
   # By left joining back to the original dfPAID, we NEVER drop a PRO visit.
-  # Visits without a valid clinical match will safely just get NA.
   dfPAID <- dfPAID %>%
     left_join(clinical_wide, by = c("person_id", "question_concept_id", "questionnaire_date"))
 }
 
-# Apply naming conventions to mapping (any_of safely ignores missing ones)
-dfPAID <- dfPAID %>%
-  rename(
-    any_of(c(
-      hba1c_value               = "clinical_concept_3004410",
-      total_cholesterol_value   = "clinical_concept_4008265",
-      ldl_cholesterol_value     = "clinical_concept_2212287",
-      hdl_cholesterol_value     = "clinical_concept_2212449",
-      triglycerides_value       = "clinical_concept_4017787",
-      systolic_bp_value         = "clinical_concept_4152194",
-      diastolic_bp_value        = "clinical_concept_4154790" 
-    ))
+# 5. Apply naming conventions dynamically based on the site flag
+if (siteFlag == "MUW") {
+  rename_map <- c(
+    hba1c_value               = paste0("clinical_concept_", hba1cConcept_MUW),
+    total_cholesterol_value   = paste0("clinical_concept_", cholesterolTotalConcept_MUW),
+    ldl_cholesterol_value     = paste0("clinical_concept_", cholesterolLdlConcept_MUW),
+    hdl_cholesterol_value     = paste0("clinical_concept_", cholesterolHdlConcept_MUW),
+    triglycerides_value       = paste0("clinical_concept_", triglyceridesConcept_MUW),
+    systolic_bp_value         = paste0("clinical_concept_", bpSystolicConcept_MUW),
+    diastolic_bp_value        = paste0("clinical_concept_", bpDiastolicConcept_MUW)
   )
+} else {
+  rename_map <- c(
+    hba1c_value               = paste0("clinical_concept_", hba1cConcept_EMC),
+    total_cholesterol_value   = paste0("clinical_concept_", cholesterolTotalConcept_EMC),
+    ldl_cholesterol_value     = paste0("clinical_concept_", cholesterolLdlConcept_EMC),
+    hdl_cholesterol_value     = paste0("clinical_concept_", cholesterolHdlConcept_EMC),
+    triglycerides_value       = paste0("clinical_concept_", triglyceridesConcept_EMC),
+    systolic_bp_value         = paste0("clinical_concept_", bpSystolicConcept_EMC),
+    diastolic_bp_value        = paste0("clinical_concept_", bpDiastolicConcept_EMC)
+  )
+}
 
-# Add answer time (1st time, 2nd repeat, etc.) - NOW ACCURATE FOR ALL VISITS
+# Apply mapping (any_of safely ignores missing ones)
+dfPAID <- dfPAID %>% rename(any_of(rename_map))
+
+# Failsafe: Ensure all expected clinical columns exist in the dataframe 
+expected_cols <- names(rename_map)
+missing_cols <- setdiff(expected_cols, names(dfPAID))
+if(length(missing_cols) > 0) {
+  dfPAID[missing_cols] <- NA
+}
+
+# Add answer time (1st time, 2nd repeat, etc.)
 dfPAID$answer_time <- ave(
   dfPAID$questionnaire_date,
   dfPAID$person_id,
@@ -156,7 +219,9 @@ dfPAID$answer_time <- ave(
 
 dfPAID$answer_time <- as.integer(dfPAID$answer_time)
 
-### Write standard CSV outputs ------------------------------------
+# ==============================================================================
+# 5. Write standard CSV outputs
+# ==============================================================================
 
 # 1st question
 dfPAID5_1 <- subset(dfPAID, dfPAID$question_number == '5_1')

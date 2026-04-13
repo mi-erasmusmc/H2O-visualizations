@@ -34,22 +34,46 @@ questionConcepts <- c(
 )
 
 ### Clinical Measurement Concepts------------------------------------------
-# Concept IDs derived from the related values data dictionary
-hba1cConcept             <- c(3004410)
-cholesterolTotalConcept  <- c(4008265)
-cholesterolLdlConcept    <- c(2212451)
-cholesterolHdlConcept    <- c(2212449)
-triglyceridesConcept     <- c(4017787)
-bpSystolicConcept        <- c(4152194)
-bpDiastolicConcept       <- c(4154790) 
+# MUW Concept IDs derived from the related values data dictionary MUW (measurements table)
+hba1cConcept_MUW             <- c(3004410)  
+cholesterolTotalConcept_MUW  <- c(4008265)
+cholesterolLdlConcept_MUW    <- c(2212451) # not used in the graphes
+cholesterolHdlConcept_MUW    <- c(2212449) # not used in the graphes
+triglyceridesConcept_MUW     <- c(4017787)
+bpSystolicConcept_MUW        <- c(4152194)
+bpDiastolicConcept_MUW       <- c(4154790) 
+
+
+
+
+# EMC Concept IDs derived from the related values data dictionary (observation table)
+hba1cConcept_EMC             <- c(4184637)  
+cholesterolTotalConcept_EMC  <- c(4008265)
+cholesterolLdlConcept_EMC    <- c(4012479) # not used in the graphes
+cholesterolHdlConcept_EMC    <- c(4101713) # not used in the graphes
+triglyceridesConcept_EMC     <- c(4032789)
+bpSystolicConcept_EMC        <- c(4152194)
+bpDiastolicConcept_EMC       <- c(4154790) 
+
 
 # Combine all clinical concepts into one list to pass to SQL
-clinicalConcepts <- c(
-  hba1cConcept,
-  cholesterolTotalConcept,
-  cholesterolLdlConcept,
-  cholesterolHdlConcept,
-  triglyceridesConcept,
-  bpSystolicConcept,
-  bpDiastolicConcept
+clinicalConcepts_MUW <- c(
+  hba1cConcept_MUW,
+  cholesterolTotalConcept_MUW,
+  cholesterolLdlConcept_MUW,
+  cholesterolHdlConcept_MUW,
+  triglyceridesConcept_MUW,
+  bpSystolicConcept_MUW,
+  bpDiastolicConcept_MUW
+)
+
+
+clinicalConcepts_EMC <- c(
+  hba1cConcept_EMC,
+  cholesterolTotalConcept_EMC,
+  cholesterolLdlConcept_EMC,
+  cholesterolHdlConcept_EMC,
+  triglyceridesConcept_EMC,
+  bpSystolicConcept_EMC,
+  bpDiastolicConcept_EMC
 )
