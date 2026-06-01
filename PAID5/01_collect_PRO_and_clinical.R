@@ -4,7 +4,7 @@ library(dplyr)
 # ==============================================================================
 # 0. Global Settings
 # ==============================================================================
-siteFlag       <- "MUW"             # Set to "MUW" or "EMC"
+siteFlag       <- "EMC"             # Set to "MUW" or "EMC"
 matchStrategy  <- "closest_overall"   # Set to "strict_window" or "closest_overall"
 timeWindowDays <- 100                # Maximum allowable days (only applies if matchStrategy is "strict_window")
 
@@ -14,12 +14,12 @@ timeWindowDays <- 100                # Maximum allowable days (only applies if m
 
 sqlPAID <- translate(
   "with disease as (
-      SELECT 
+      SELECT DISTINCT
         person_id, 
-        value_as_concept_id
-      FROM @databaseSchema.observation
-          WHERE observation_concept_id = 44807982
-             and value_as_concept_id IN (@diseaseConcepts)
+        condition_concept_id
+      FROM @databaseSchema.condition_occurrence
+          WHERE 1=1
+             and condition_concept_id IN (@diseaseConcepts)
    ), response as (
        select person_id, 
               observation_concept_id, 
@@ -32,7 +32,7 @@ sqlPAID <- translate(
        response.observation_concept_id as question_concept_id, 
        response.value_as_concept_id as answer_concept_id,
        response.observation_date as questionnaire_date,
-       disease.value_as_concept_id as disease_concept_id
+       disease.condition_concept_id as disease_concept_id
    from response
    left join disease
        on disease.person_id = response.person_id
@@ -56,11 +56,17 @@ if (siteFlag == "MUW") {
   # For EMC, fetch from observation but alias to measurement columns
   sqlClinical <- translate(
     "select person_id, 
-            observation_concept_id as measurement_concept_id, 
+            measurement_concept_id, 
             value_as_number, 
-            observation_date as measurement_date
-     from @databaseSchema.observation
-     where observation_concept_id in (@clinicalConcepts)",
+            measurement_date
+     from @databaseSchema.measurement
+     where measurement_concept_id in (@clinicalConcepts)",
+    #"select person_id, 
+    #        observation_concept_id as measurement_concept_id, 
+    #        value_as_number, 
+    #        observation_date as measurement_date
+    # from @databaseSchema.observation
+    # where observation_concept_id in (@clinicalConcepts)",
     targetDialect = sqlDialect
   )
   clinicalConceptsToUse <- clinicalConcepts_EMC

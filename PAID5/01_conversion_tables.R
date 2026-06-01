@@ -47,13 +47,13 @@ bpDiastolicConcept_MUW       <- c(4154790)
 
 
 # EMC Concept IDs derived from the related values data dictionary (observation table)
-hba1cConcept_EMC             <- c(4184637)  
-cholesterolTotalConcept_EMC  <- c(4008265)
-cholesterolLdlConcept_EMC    <- c(4012479) # not used in the graphes
-cholesterolHdlConcept_EMC    <- c(4101713) # not used in the graphes
-triglyceridesConcept_EMC     <- c(4032789)
+hba1cConcept_EMC             <- c(3004410)  
+cholesterolTotalConcept_EMC  <- c(3019900)
+cholesterolLdlConcept_EMC    <- c(3001308) # not used in the graphes
+cholesterolHdlConcept_EMC    <- c(3023602) # not used in the graphes
+triglyceridesConcept_EMC     <- c(3025839)
 bpSystolicConcept_EMC        <- c(4152194)
-bpDiastolicConcept_EMC       <- c(4154790) 
+bpDiastolicConcept_EMC       <- c(4154790)
 
 
 # Combine all clinical concepts into one list to pass to SQL

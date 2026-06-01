@@ -33,8 +33,8 @@ aggregate_paid_data <- function(input_file, output_file) {
 # Loop through all 5 files to process them automatically
 for (i in 1:5) {
   # Looking for the "_mix" files as defined in your original visualization script
-  input_path <- file.path(resultsDir, paste0("5_", i, "_mix.csv"))
-  output_path <- file.path(resultsDir, paste0("5_", i, "_agg.csv"))
+  input_path <- file.path("Z:/Matthijs/Git/H2O-visualizations/results", paste0("5_", i, "_mix.csv"))
+  output_path <- file.path("Z:/Matthijs/Git/H2O-visualizations/results", paste0("5_", i, "_agg.csv"))
   
   if (file.exists(input_path)) {
     aggregate_paid_data(input_path, output_path)
