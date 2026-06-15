@@ -49,7 +49,7 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
   dbms = "postgresql",
   server = "localhost/H2O_v3",
   user = "postgres",
-  password = "",
+  password = "postgres",
   port = 5432,
   pathToDriver = "Z:/Matthijs/Git/jdbc"
 )

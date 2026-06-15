@@ -21,6 +21,7 @@ plot_trend_with_sd <- function(df, title) {
   upper[upper > 4] <- 4
   
   plot(visits, means, type = "n", 
+       #xlim = c(0,10),
        ylim = c(0, 4), 
        main = title, cex.main = 1.3,
        xlab = "", ylab = "Average Score", 
