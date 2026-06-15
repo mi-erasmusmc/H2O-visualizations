@@ -14,12 +14,15 @@ timeWindowDays <- 100                # Maximum allowable days (only applies if m
 
 sqlPAID <- translate(
   "with disease as (
-      SELECT DISTINCT
+      -- Keep exactly 1 disease row per person to prevent row multiplication
+      -- when joining to questionnaire responses.
+      SELECT
         person_id, 
-        condition_concept_id
+        MIN(condition_concept_id) as condition_concept_id
       FROM @databaseSchema.condition_occurrence
           WHERE 1=1
              and condition_concept_id IN (@diseaseConcepts)
+      GROUP BY person_id
    ), response as (
        select person_id, 
               observation_concept_id, 
@@ -109,6 +112,12 @@ dfPAID <- querySql(
   )
 )
 names(dfPAID) <- tolower(names(dfPAID))
+
+# Defensive deduplication on PRO event key (prevents accidental duplicates from
+# any upstream source characteristics while preserving one canonical row).
+dfPAID <- dfPAID %>%
+  arrange(person_id, question_concept_id, questionnaire_date, answer_concept_id, disease_concept_id) %>%
+  distinct(person_id, question_concept_id, answer_concept_id, questionnaire_date, .keep_all = TRUE)
 
 # Retrieve Clinical Values
 dfMeasurements <- querySql(
