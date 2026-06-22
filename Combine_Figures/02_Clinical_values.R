@@ -17,6 +17,12 @@ df_trig_B  <- read.csv(file.path(site2_dir, "triglycerides_value_agg.csv"))
 df_sys_B   <- read.csv(file.path(site2_dir, "systolic_bp_value_agg.csv"))
 df_dia_B   <- read.csv(file.path(site2_dir, "diastolic_bp_value_agg.csv"))
 
+
+# Convert values
+df_hba1c_B[, 2:3] <- lapply(df_hba1c_B[, 2:3], hba1c_to_percent)
+df_chol_B[, 2:3]  <- lapply(df_chol_B[, 2:3], convert_lipid)
+df_trig_B[, 2:3]  <- lapply(df_trig_B[, 2:3], convert_lipid)
+
 # Create a master plots directory at the root level if it doesn't exist
 if (!dir.exists("plots")) dir.create("plots")
 
@@ -82,6 +88,9 @@ draw_all_plots <- function() {
   plot_dual_clinical(df_sys_A, df_sys_B, "Clinical Trend: Systolic Blood Pressure", "mmHg")
   plot_dual_clinical(df_dia_A, df_dia_B, "Clinical Trend: Diastolic Blood Pressure", "mmHg")
 }
+
+
+
 
 # Save Outputs
 jpeg(filename = "plots/Dual_Clinical_Average_Change.jpg", width = 10, height = 24, units = "in", res = 300, quality = 100)
