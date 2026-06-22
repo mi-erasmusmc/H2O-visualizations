@@ -34,11 +34,12 @@ plot_dual_paid <- function(dfA, dfB, title) {
   upperB <- pmin(df$mean_value_B + df$sd_value_B, 4)
   lowerB <- pmax(df$mean_value_B - df$sd_value_B, 0)
   
-  # Setup empty plot frame
+  # Setup empty plot frame with larger fonts (main title stays at 2)
   plot(visits, df$mean_value_A, type = "n", 
        ylim = c(0, 4), 
-       main = title, cex.main = 1.3,
+       main = title, cex.main = 2,
        xlab = "", ylab = "Average Score", 
+       cex.lab = 1.8, cex.axis = 1.6,    # Scaled up axis labels and ticks
        xaxt = "n") 
   
   # Add shaded areas (filtering out NAs in case a site missed a visit)
@@ -54,26 +55,29 @@ plot_dual_paid <- function(dfA, dfB, title) {
             col = rgb(1, 0.5, 0, 0.15), border = NA) # Orange for Site 2
   }
   
-  # Add the mean lines
-  lines(visits[validA], df$mean_value_A[validA], col = "blue", lwd = 2, type = "o", pch = 19)
-  lines(visits[validB], df$mean_value_B[validB], col = "darkorange", lwd = 2, type = "o", pch = 15)
+  # Add the mean lines (line width at 4, increased data point size with cex = 1.5)
+  lines(visits[validA], df$mean_value_A[validA], col = "blue", lwd = 4, type = "o", pch = 19, cex = 1.5)
+  lines(visits[validB], df$mean_value_B[validB], col = "darkorange", lwd = 4, type = "o", pch = 15, cex = 1.5)
   
-  # Add Legend
+  # Add Legend with larger text and matching point sizes
   legend("topright", legend = c("MUW (n1)", "EMC (n2)"),
-         col = c("blue", "darkorange"), pch = c(19, 15), lwd = 2, bty = "n")
+         col = c("blue", "darkorange"), pch = c(19, 15), lwd = 4, pt.cex = 1.5, bty = "n", cex = 1.8)
   
   # Add custom X-axis labels with dual patient counts
   countsA <- ifelse(is.na(df$patient_count_A), 0, df$patient_count_A)
   countsB <- ifelse(is.na(df$patient_count_B), 0, df$patient_count_B)
+  
   countsA <- format_n(df$patient_count_A)
   countsB <- format_n(df$patient_count_B)
   
-  axis(1, at = visits, labels = paste0("Visit ", visits, "\n(n1=", countsA, " | n2=", countsB, ")"), padj = 0.5)
+  axis(1, at = visits, labels = paste0("Visit ", visits, "\n(n1=", countsA, " | n2=", countsB, ")"), 
+       padj = 0.5, cex.axis = 1.6) # Scaled up X-axis label font size
 }
 
 # Wrap all plotting commands
 draw_all_plots <- function() {
-  par(mfrow = c(5, 1), mar = c(6, 5, 7, 2))
+  # Expanded margins (mar) and label positioning (mgp) to safely fit massive labels
+  par(mfrow = c(5, 1), mar = c(8, 7, 7, 2), mgp = c(4.5, 1.5, 0))
   
   plot_dual_paid(df1_A, df1_B, "PAID-5_1: Feeling scared when you think about living with diabetes?")
   plot_dual_paid(df2_A, df2_B, "PAID-5_2: Feeling depressed when you think about living with diabetes?")

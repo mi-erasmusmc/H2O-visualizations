@@ -44,48 +44,50 @@ plot_dual_clinical <- function(dfA, dfB, title, y_axis_label) {
   y_min <- min(c(lowerA, lowerB), na.rm = TRUE) * 0.9
   y_max <- max(c(upperA, upperB), na.rm = TRUE) * 1.1
   
-  # Setup empty plot frame
+  # Setup empty plot frame with larger fonts (excluding main title)
   plot(visits, df$mean_value_A, type = "n", 
        ylim = c(y_min, y_max), 
-       main = title, cex.main = 1.3,
+       main = title, cex.main = 2,       # Title font size stays at 2
        xlab = "", ylab = y_axis_label, 
+       cex.lab = 1.8, cex.axis = 1.6,    # Increased axis labels and ticks further
        xaxt = "n") 
   
   # Add shaded areas
   validA <- !is.na(df$mean_value_A)
   if(any(validA)) {
     polygon(c(visits[validA], rev(visits[validA])), c(upperA[validA], rev(lowerA[validA])),
-            col = rgb(0, 0, 1, 0.15), border = NA) # Red for Site 1
+            col = rgb(0, 0, 1, 0.15), border = NA) # Blue for Site 1
   }
   
   validB <- !is.na(df$mean_value_B)
   if(any(validB)) {
     polygon(c(visits[validB], rev(visits[validB])), c(upperB[validB], rev(lowerB[validB])),
-            col = rgb(1, 0.5, 0, 0.15), border = NA) # Teal for Site 2
+            col = rgb(1, 0.5, 0, 0.15), border = NA) # Teal for Site 2 (adjusted to orange visually)
   }
   
-  # Add the mean lines
-  lines(visits[validA], df$mean_value_A[validA], col = "blue", lwd = 2, type = "o", pch = 19)
-  lines(visits[validB], df$mean_value_B[validB], col = "darkorange", lwd = 2, type = "o", pch = 15)
+  # Add the mean lines (line width stays at 4, but increased data point size with cex = 1.5)
+  lines(visits[validA], df$mean_value_A[validA], col = "blue", lwd = 4, type = "o", pch = 19, cex = 1.5)
+  lines(visits[validB], df$mean_value_B[validB], col = "darkorange", lwd = 4, type = "o", pch = 15, cex = 1.5)
   
-  # Add Legend
+  # Add Legend with larger text and matching point sizes
   legend("topright", legend = c("MUW (n1)", "EMC (n2)"),
-         col = c("blue", "darkorange"), pch = c(19, 15), lwd = 2, bty = "n")
+         col = c("blue", "darkorange"), pch = c(19, 15), lwd = 4, pt.cex = 1.5, bty = "n", cex = 1.8)
   
-  # Add custom X-axis labels
+  # Add custom X-axis labels with larger fonts
   countsA <- ifelse(is.na(df$patient_count_A), 0, df$patient_count_A)
   countsB <- ifelse(is.na(df$patient_count_B), 0, df$patient_count_B)
   
   countsA <- format_n(df$patient_count_A)
   countsB <- format_n(df$patient_count_B)
   
-   
-  axis(1, at = visits, labels = paste0("Visit ", visits, "\n(n1=", countsA, " | n2=", countsB, ")"), padj = 0.5)
+  axis(1, at = visits, labels = paste0("Visit ", visits, "\n(n1=", countsA, " | n2=", countsB, ")"), 
+       padj = 0.5, cex.axis = 1.6) # Increased X-axis label font size further
 }
 
 # Wrap all plotting commands
 draw_all_plots <- function() {
-  par(mfrow = c(5, 1), mar = c(6, 5, 7, 2))
+  # Expanded margins (mar) and label positioning (mgp) heavily to accommodate massive labels safely
+  par(mfrow = c(5, 1), mar = c(8, 7, 7, 2), mgp = c(4.5, 1.5, 0))
   
   plot_dual_clinical(df_hba1c_A, df_hba1c_B, "Clinical Trend: Hemoglobin A1c (HbA1c)", "HbA1c (%)")
   plot_dual_clinical(df_chol_A, df_chol_B, "Clinical Trend: Total Cholesterol", "Cholesterol (mg/dL)")
@@ -93,9 +95,6 @@ draw_all_plots <- function() {
   plot_dual_clinical(df_sys_A, df_sys_B, "Clinical Trend: Systolic Blood Pressure", "mmHg")
   plot_dual_clinical(df_dia_A, df_dia_B, "Clinical Trend: Diastolic Blood Pressure", "mmHg")
 }
-
-
-
 
 # Save Outputs
 jpeg(filename = "plots/Dual_Clinical_Average_Change.jpg", width = 10, height = 24, units = "in", res = 300, quality = 100)
