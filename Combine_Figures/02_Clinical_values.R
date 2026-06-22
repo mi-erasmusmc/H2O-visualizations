@@ -69,12 +69,17 @@ plot_dual_clinical <- function(dfA, dfB, title, y_axis_label) {
   lines(visits[validB], df$mean_value_B[validB], col = "darkorange", lwd = 2, type = "o", pch = 15)
   
   # Add Legend
-  legend("topright", legend = c("MUW", "EMC"),
+  legend("topright", legend = c("MUW (n1)", "EMC (n2)"),
          col = c("blue", "darkorange"), pch = c(19, 15), lwd = 2, bty = "n")
   
   # Add custom X-axis labels
   countsA <- ifelse(is.na(df$patient_count_A), 0, df$patient_count_A)
   countsB <- ifelse(is.na(df$patient_count_B), 0, df$patient_count_B)
+  
+  countsA <- format_n(df$patient_count_A)
+  countsB <- format_n(df$patient_count_B)
+  
+   
   axis(1, at = visits, labels = paste0("Visit ", visits, "\n(n1=", countsA, " | n2=", countsB, ")"), padj = 0.5)
 }
 
@@ -98,6 +103,11 @@ draw_all_plots()
 dev.off()
 
 svg(filename = "plots/Dual_Clinical_Average_Change.svg", width = 10, height = 24)
+draw_all_plots()
+dev.off()
+
+# Save Outputs (EPS)
+postscript(file = "plots/Dual_Clinical_Average_Change.eps", width = 10, height = 24, horizontal = FALSE, onefile = FALSE)
 draw_all_plots()
 dev.off()
 
