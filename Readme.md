@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20305411.svg)](https://doi.org/10.5281/zenodo.20305411)
+> TODO add paper citation
+
 # General
 This repository contains code to:
 1. Recreate the H2O insights centre statistics based on querying directly the databases
