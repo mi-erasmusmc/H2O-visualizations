@@ -4,7 +4,7 @@ library(dplyr)
 # ==============================================================================
 # 0. Global Settings
 # ==============================================================================
-siteFlag       <- "EMC"             # Set to "MUW" or "EMC"
+siteFlag       <- "MUW"             # Set to "MUW" or "EMC"
 matchStrategy  <- "closest_overall"   # Set to "strict_window" or "closest_overall"
 timeWindowDays <- 100                # Maximum allowable days (only applies if matchStrategy is "strict_window")
 

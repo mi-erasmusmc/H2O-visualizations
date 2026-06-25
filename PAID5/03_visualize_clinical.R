@@ -23,7 +23,6 @@ plot_clinical_trend <- function(df, title, y_axis_label) {
   y_max <- max(upper, na.rm = TRUE) * 1.1
   
   plot(visits, means, type = "n", 
-       #xlim = c(0,10),
        ylim = c(y_min, y_max), 
        main = title, cex.main = 1.3,
        xlab = "", ylab = y_axis_label, 

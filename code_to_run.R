@@ -21,7 +21,7 @@ library(viridis)
 
 ### Create the connection & output directory------------------------------------
 #Set working directory to the H2O folder
-setwd("Z:/Matthijs/Git/H2O-visualizations")
+setwd("~/H2O-visualizations")
 
 #Create results directory
 resultsDirectory <- "results"
@@ -37,8 +37,8 @@ password <- ""
 port <- 
 pathToDriver <- ""
 
-databaseSchema <- "cdm"
-sqlDialect <- "postgresql"
+databaseSchema <- ""
+sqlDialect <- ""
 #supported dialects:
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite,
 #redshift, hive, sqliteextended, duckdb, snowflake, synapse, iris
@@ -46,12 +46,12 @@ sqlDialect <- "postgresql"
 #Connect to the db
 #https:://ohdsi.github.io/DatabaseConnector/articles/Connecting.html
 connectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "postgresql",
-  server = "localhost/H2O_v3",
-  user = "postgres",
-  password = "postgres",
+  dbms = "",
+  server = "",
+  user = "",
+  password = "",
   port = 5432,
-  pathToDriver = "Z:/Matthijs/Git/jdbc"
+  pathToDriver = ""
 )
 
 connection <- DatabaseConnector::connect(connectionDetails)

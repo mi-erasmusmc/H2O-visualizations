@@ -4,7 +4,7 @@ library(dplyr)
 
 # 1. Read one of the questionnaire files that contains the clinical columns
 # (Since the clinical data is attached to the visit, 5_1_mix.csv works perfectly as the source)
-input_file <- file.path("Z:/Matthijs/Git/H2O-visualizations/results", "5_1_mix.csv") 
+input_file <- file.path(resultsDir, "5_1_mix.csv") 
 df_raw <- read.csv(input_file)
 
 # 2. Extract distinct patient visits so we don't double-count clinical values
@@ -38,7 +38,7 @@ for (metric in clinical_metrics) {
   df_agg$sd_value[is.na(df_agg$sd_value)] <- 0
   
   # Save the aggregated, privacy-safe data
-  output_path <- file.path("Z:/Matthijs/Git/H2O-visualizations/results", paste0(metric, "_agg.csv"))
+  output_path <- file.path(resultsDir, paste0(metric, "_agg.csv"))
   write.csv(df_agg, output_path, row.names = FALSE)
   
   print(paste("Aggregated securely:", output_path))
