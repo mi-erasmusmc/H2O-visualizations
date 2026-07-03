@@ -52,8 +52,8 @@ cholesterolTotalConcept_EMC  <- c(3019900)
 cholesterolLdlConcept_EMC    <- c(3001308) # not used in the graphes
 cholesterolHdlConcept_EMC    <- c(3023602) # not used in the graphes
 triglyceridesConcept_EMC     <- c(3025839)
-bpSystolicConcept_EMC        <- c(3004249)
-bpDiastolicConcept_EMC       <- c(3012888)
+bpSystolicConcept_EMC        <- c(3004249) #3004249
+bpDiastolicConcept_EMC       <- c(3012888) #3012888
 
 
 # Combine all clinical concepts into one list to pass to SQL

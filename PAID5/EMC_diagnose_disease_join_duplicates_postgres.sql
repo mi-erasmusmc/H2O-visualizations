@@ -4,7 +4,7 @@ Purpose:
   in one CDM instance but not another.
 
 How to use:
-  1) Replace YOUR_CDM_SCHEMA below.
+  1) Replace cdm below.
   2) Run this script on CDM instance A.
   3) Save all result sets.
   4) Run the same script on CDM instance B and compare.
@@ -35,8 +35,8 @@ VALUES (40768166), (1761895), (1989000), (42690315), (4112552);
 
 CREATE TEMP TABLE tmp_diag_diabetes_descendants AS
 SELECT DISTINCT ca.descendant_concept_id AS concept_id
-FROM YOUR_CDM_SCHEMA.concept_ancestor ca
-JOIN YOUR_CDM_SCHEMA.concept c
+FROM cdm.concept_ancestor ca
+JOIN cdm.concept c
   ON c.concept_id = ca.descendant_concept_id
 WHERE ca.ancestor_concept_id IN (201826, 4193704, 4008576, 201254);
 
@@ -47,7 +47,7 @@ SELECT 201820
 UNION
 SELECT 37018196;
 
-/* ============================================================================
+/*
    1) Recreate R-side response and disease tables
 ============================================================================ */
 CREATE TEMP TABLE tmp_diag_response AS
@@ -56,14 +56,14 @@ SELECT
   o.observation_concept_id AS question_concept_id,
   o.value_as_concept_id    AS answer_concept_id,
   o.observation_date       AS questionnaire_date
-FROM YOUR_CDM_SCHEMA.observation o
+FROM cdm.observation o
 WHERE o.observation_concept_id IN (SELECT concept_id FROM tmp_diag_question_concepts);
 
 CREATE TEMP TABLE tmp_diag_disease AS
 SELECT DISTINCT
   co.person_id,
   co.condition_concept_id
-FROM YOUR_CDM_SCHEMA.condition_occurrence co
+FROM cdm.condition_occurrence co
 WHERE co.condition_concept_id IN (SELECT concept_id FROM tmp_diag_diabetes_concepts);
 
 CREATE TEMP TABLE tmp_diag_joined AS
@@ -77,7 +77,7 @@ FROM tmp_diag_response r
 LEFT JOIN tmp_diag_disease d
   ON d.person_id = r.person_id;
 
-/* ============================================================================
+/*
    2) High-level row multiplication summary
 ============================================================================ */
 SELECT
@@ -94,7 +94,7 @@ SELECT
   'row_multiplier_joined_over_response' AS metric,
   round((SELECT count(*)::numeric FROM tmp_diag_joined) / nullif((SELECT count(*)::numeric FROM tmp_diag_response), 0), 4)::numeric AS value;
 
-/* ============================================================================
+/*
    3) Is response already duplicated before any disease join?
       (Same key columns used in R before disease column matters)
 ============================================================================ */
@@ -114,7 +114,7 @@ HAVING count(*) > 1
 ORDER BY duplicate_count DESC, person_id
 LIMIT 100;
 
-/* ============================================================================
+/*
    4) Disease multiplicity by person (main cause of join expansion)
 ============================================================================ */
 SELECT
@@ -153,7 +153,7 @@ WHERE coalesce(d.disease_rows, 0) > 1
 ORDER BY expected_join_rows_for_person DESC, r.person_id
 LIMIT 100;
 
-/* ============================================================================
+/*
    5) Which diabetes condition_concept_ids are driving multiplicity?
 ============================================================================ */
 SELECT
@@ -182,7 +182,7 @@ GROUP BY concept_set
 ORDER BY person_count DESC
 LIMIT 100;
 
-/* ============================================================================
+/*
    6) Condition_occurrence duplicate quality check
       (same person + condition_concept_id repeated many times)
 ============================================================================ */
@@ -190,14 +190,14 @@ SELECT
   person_id,
   condition_concept_id,
   count(*) AS condition_occurrence_rows
-FROM YOUR_CDM_SCHEMA.condition_occurrence
+FROM cdm.condition_occurrence
 WHERE condition_concept_id IN (SELECT concept_id FROM tmp_diag_diabetes_concepts)
 GROUP BY person_id, condition_concept_id
 HAVING count(*) > 1
 ORDER BY condition_occurrence_rows DESC, person_id
 LIMIT 100;
 
-/* ============================================================================
+/*
    7) Side-by-side comparison helper metrics
       Save this output from both CDMs; differences here usually explain behavior.
 ============================================================================ */

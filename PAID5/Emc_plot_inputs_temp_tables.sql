@@ -16,8 +16,10 @@ Output temp tables (same shape as *_agg.csv files):
   tmp_agg_systolic_bp_value, tmp_agg_diastolic_bp_value
 
 Replace:
-  YOUR_CDM_SCHEMA with your schema name (without square brackets).
+  cdm with your schema name (without square brackets).
 */
+
+select * from cdm.concept limit 10;
 
 /* ============================================================================
    0) Parameters
@@ -103,8 +105,8 @@ VALUES
 ============================================================================ */
 CREATE TEMP TABLE tmp_diabetes_descendants AS
 SELECT DISTINCT ca.descendant_concept_id AS concept_id
-FROM YOUR_CDM_SCHEMA.concept_ancestor ca
-JOIN YOUR_CDM_SCHEMA.concept c
+FROM cdm.concept_ancestor ca
+JOIN cdm.concept c
   ON ca.descendant_concept_id = c.concept_id
 WHERE ca.ancestor_concept_id IN (201826, 4193704, 4008576, 201254);
 
@@ -124,7 +126,7 @@ SELECT
   r.observation_concept_id::bigint AS question_concept_id,
   r.value_as_concept_id::bigint    AS answer_concept_id,
   r.observation_date::date         AS questionnaire_date
-FROM YOUR_CDM_SCHEMA.observation r
+FROM cdm.observation r
 WHERE r.observation_concept_id IN (40768166, 1761895, 1989000, 42690315, 4112552);
 
 CREATE TEMP TABLE tmp_clinical_raw AS
@@ -133,8 +135,11 @@ SELECT
   m.measurement_concept_id::bigint AS measurement_concept_id,
   m.value_as_number,
   m.measurement_date::date          AS measurement_date
-FROM YOUR_CDM_SCHEMA.measurement m
+FROM cdm.measurement m
 WHERE m.measurement_concept_id IN (3004410, 3019900, 3001308, 3023602, 3025839, 3004249, 3012888);
+
+SELECT observation_concept_id, count(*) from cdm.observation where observation_concept_id in (40768166, 1761895, 1989000, 42690315, 4112552) group by observation_concept_id;
+SELECT measurement_concept_id, count(*) from cdm.measurement WHERE measurement_concept_id IN (3004410, 3019900, 3001308, 3023602, 3025839, 3004249, 3012888) group by measurement_concept_id ;
 
 /* ============================================================================
    5) Match closest clinical value to each PRO row (closest_overall strategy)
@@ -162,6 +167,8 @@ WITH ranked_matches AS (
   FROM tmp_pro_raw p
   JOIN tmp_clinical_raw c
     ON p.person_id = c.person_id
+--     WHERE p.person_id = 2
+    ORDER BY p.question_concept_id, rn
 )
 SELECT
   person_id,
@@ -209,9 +216,10 @@ GROUP BY
   qm.question_number,
   p.answer_concept_id,
   am.answer_value,
-  p.questionnaire_date;
+  p.questionnaire_date
+ORDER BY answer_time desc, p.person_id;
 
-CREATE TEMP TABLE tmp_paid5_1_mix AS SELECT * FROM tmp_pro_enriched WHERE question_number = '5_1';
+CREATE TEMP TABLE tmp_paid5_1_mix AS SELECT * FROM tmp_pro_enriched WHERE question_number = '5_1' order by person_id, question_concept_id , answer_time;
 CREATE TEMP TABLE tmp_paid5_2_mix AS SELECT * FROM tmp_pro_enriched WHERE question_number = '5_2';
 CREATE TEMP TABLE tmp_paid5_3_mix AS SELECT * FROM tmp_pro_enriched WHERE question_number = '5_3';
 CREATE TEMP TABLE tmp_paid5_4_mix AS SELECT * FROM tmp_pro_enriched WHERE question_number = '5_4';
@@ -354,3 +362,10 @@ SELECT * FROM tmp_agg_triglycerides_value ORDER BY answer_time;
 SELECT * FROM tmp_agg_systolic_bp_value ORDER BY answer_time;
 SELECT * FROM tmp_agg_diastolic_bp_value ORDER BY answer_time;
 
+SELECT
+        person_id,
+        MIN(condition_concept_id) as condition_concept_id
+      FROM cdm.condition_occurrence
+          WHERE 1=1
+             and condition_concept_id IN (201826,4193704,4008576,201254,201820,37018196)
+      GROUP BY person_id
