@@ -12,57 +12,84 @@ timeWindowDays <- 100                # Maximum allowable days (only applies if m
 # 1. Define SQL Queries
 # ==============================================================================
 
-sqlPAID <- translate(
-  "with disease as (
-      SELECT 
-        person_id, 
-        value_as_concept_id
-      FROM @databaseSchema.observation
-          WHERE observation_concept_id = 44807982
-             and value_as_concept_id IN (@diseaseConcepts)
-   ), response as (
-       select person_id, 
-              observation_concept_id, 
-              value_as_concept_id,
-              observation_date
-       from @databaseSchema.observation
-       where observation_concept_id in (@questionConcepts)
-   )
-   select response.person_id,
-       response.observation_concept_id as question_concept_id, 
-       response.value_as_concept_id as answer_concept_id,
-       response.observation_date as questionnaire_date,
-       disease.value_as_concept_id as disease_concept_id
-   from response
-   left join disease
-       on disease.person_id = response.person_id
-   order by response.person_id, response.observation_date asc",
+if (siteFlag == "MUW") {
+  sqlPAID <- translate(
+    "with disease as (
+        SELECT 
+          person_id, 
+          value_as_concept_id
+        FROM @databaseSchema.observation
+            WHERE observation_concept_id = 44807982
+              and value_as_concept_id IN (@diseaseConcepts)
+    ), response as (
+        select person_id, 
+                observation_concept_id, 
+                value_as_concept_id,
+                observation_date
+        from @databaseSchema.observation
+        where observation_concept_id in (@questionConcepts)
+    )
+    select response.person_id,
+        response.observation_concept_id as question_concept_id, 
+        response.value_as_concept_id as answer_concept_id,
+        response.observation_date as questionnaire_date,
+        disease.value_as_concept_id as disease_concept_id
+    from response
+    left join disease
+        on disease.person_id = response.person_id
+    order by response.person_id, response.observation_date asc",
+    targetDialect = sqlDialect
+  )
+} else if (siteFlag == "EMC") {
+  sqlPAID <- translate(
+    "with disease as (
+        -- Keep exactly 1 disease row per person to prevent row multiplication
+        -- when joining to questionnaire responses.
+        SELECT
+          person_id, 
+          MIN(condition_concept_id) as condition_concept_id
+        FROM @databaseSchema.condition_occurrence
+            WHERE 1=1
+               and condition_concept_id IN (@diseaseConcepts)
+        GROUP BY person_id
+     ), response as (
+         select person_id, 
+                observation_concept_id, 
+                value_as_concept_id,
+                observation_date
+         from @databaseSchema.observation
+         where observation_concept_id in (@questionConcepts)
+     )
+     select response.person_id,
+         response.observation_concept_id as question_concept_id, 
+         response.value_as_concept_id as answer_concept_id,
+         response.observation_date as questionnaire_date,
+         disease.condition_concept_id as disease_concept_id
+     from response
+     left join disease
+         on disease.person_id = response.person_id
+     order by response.person_id, response.observation_date asc",
+    targetDialect = sqlDialect
+  )
+} else {
+  stop("Invalid siteFlag. Must be 'MUW' or 'EMC'.")
+}
+
+# SQL Query for clinical measurements (same query for MUW and EMC)
+sqlClinical <- translate(
+  "select person_id, 
+          measurement_concept_id, 
+          value_as_number, 
+          measurement_date
+   from @databaseSchema.measurement
+   where measurement_concept_id in (@clinicalConcepts)",
   targetDialect = sqlDialect
 )
 
-# SQL Query to retrieve all required clinical measurements based on site
+# Site-specific concept set selection
 if (siteFlag == "MUW") {
-  sqlClinical <- translate(
-    "select person_id, 
-            measurement_concept_id, 
-            value_as_number, 
-            measurement_date
-     from @databaseSchema.measurement
-     where measurement_concept_id in (@clinicalConcepts)",
-    targetDialect = sqlDialect
-  )
   clinicalConceptsToUse <- clinicalConcepts_MUW
 } else if (siteFlag == "EMC") {
-  # For EMC, fetch from observation but alias to measurement columns
-  sqlClinical <- translate(
-    "select person_id, 
-            observation_concept_id as measurement_concept_id, 
-            value_as_number, 
-            observation_date as measurement_date
-     from @databaseSchema.observation
-     where observation_concept_id in (@clinicalConcepts)",
-    targetDialect = sqlDialect
-  )
   clinicalConceptsToUse <- clinicalConcepts_EMC
 } else {
   stop("Invalid siteFlag. Must be 'MUW' or 'EMC'.")
@@ -103,6 +130,12 @@ dfPAID <- querySql(
   )
 )
 names(dfPAID) <- tolower(names(dfPAID))
+
+# Defensive deduplication on PRO event key (prevents accidental duplicates from
+# any upstream source characteristics while preserving one canonical row).
+dfPAID <- dfPAID %>%
+  arrange(person_id, question_concept_id, questionnaire_date, answer_concept_id, disease_concept_id) %>%
+  distinct(person_id, question_concept_id, answer_concept_id, questionnaire_date, .keep_all = TRUE)
 
 # Retrieve Clinical Values
 dfMeasurements <- querySql(

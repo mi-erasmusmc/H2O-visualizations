@@ -37,7 +37,7 @@ password <- ""
 port <- 
 pathToDriver <- ""
 
-databaseSchema <- "h2o_dm_ittm"
+databaseSchema <- ""
 sqlDialect <- ""
 #supported dialects:
 #sqlserver, oracle, postgresql, pdw, impala, netezza, bigquery, spark, sqlite,
@@ -46,12 +46,12 @@ sqlDialect <- ""
 #Connect to the db
 #https:://ohdsi.github.io/DatabaseConnector/articles/Connecting.html
 connectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = dbms,
-  server = server,
-  user = user,
-  password = password,
-  port = port,
-  pathToDriver = pathToDriver
+  dbms = "",
+  server = "",
+  user = "",
+  password = "",
+  port = 5432,
+  pathToDriver = ""
 )
 
 connection <- DatabaseConnector::connect(connectionDetails)
